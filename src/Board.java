@@ -16,6 +16,12 @@ public class Board {
     private JPanel nextPiecePanel;
     private JPanel contentPanel;
     private JTextArea useArrowKeysToTextArea;
+    private Timer timer;
+
+    public Board() {
+        startButton.addActionListener(e -> start());
+        stopButton.addActionListener(e -> stop());
+    }
 
     public void showBoard () {
         JFrame frame = new JFrame("Drop Block");
@@ -30,5 +36,36 @@ public class Board {
 
     private void createUIComponents() {
         gamePanel = new GamePanel();
+    }
+
+    private void start() {
+        stop();
+        if (timer == null) {
+            timer = new Timer(1, e -> {
+                GLog.info("Timer.");
+            });
+        }
+        if (timer.isRunning()) {
+            return;
+        }
+        timer.start();
+        GLog.info("Started.");
+    }
+
+    private void stop() {
+        if (timer == null) {
+            return;
+        }
+        pause();
+        timer = null;
+        GLog.info("Stopped.");
+    }
+
+    private void pause() {
+        if (timer == null) {
+            return;
+        }
+        timer.stop();
+        GLog.info("Paused.");
     }
 }
