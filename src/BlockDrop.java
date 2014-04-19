@@ -3,7 +3,7 @@ import javax.swing.*;
 public class BlockDrop {
 
     public static void main(String[] args) {
-        System.out.println("Hello World!");
+        GLog.info("Starting game");
         SwingUtilities.invokeLater(BlockDrop::run);
     }
 
