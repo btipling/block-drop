@@ -1,31 +1,41 @@
 package blocks;
 
+import dropblock.utils.GLog;
+
 import java.awt.*;
 import java.util.Random;
 
 public abstract class Block {
-    protected int[] rotationA;
-    protected int[] rotationB;
-    protected int[] rotationC;
-    protected int[] rotationD;
-    protected int[][] rotations;
+    public static enum BLOCK_TYPES {
+        NONE,
+        SBLOCK,
+        ZBLOCK,
+        LBLOCK,
+        JBLOCK,
+        TBLOCK,
+        IBLOCK,
+        OBLOCK,
+    };
+    protected int[][][] rotations;
     private int currentRotation = 0;
-    protected final Color color = new Color(121, 121, 121);
-
 
 
     public Block() {
-        rotations = new int[][]{
-            rotationA,
-            rotationB,
-            rotationC,
-            rotationD,
-        } ;
+       GLog.info("Setting up a block.");
+    };
+
+    public void setupBlock() {
+        rotations = new int[][][]{
+            getRotationA(),
+            getRotationB(),
+            getRotationC(),
+            getRotationD(),
+        };
         Random rand = new Random();
-        currentRotation = rand.nextInt(5);
+        currentRotation = rand.nextInt(4);
     }
 
-    public int[] getCurrentRotation() {
+    public int[][] getCurrentRotation() {
        return rotations[currentRotation];
     }
 
@@ -36,8 +46,14 @@ public abstract class Block {
         }
     }
 
-    public Color getColor() {
-        return color;
+    public int getBlockType() {
+        return 0;
     }
+
+    public abstract Color getColor();
+    protected abstract int[][] getRotationA();
+    protected abstract int[][] getRotationB();
+    protected abstract int[][] getRotationC();
+    protected abstract int[][] getRotationD();
 
 }

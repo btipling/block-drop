@@ -1,3 +1,5 @@
+import dropblock.utils.GLog;
+
 import javax.swing.*;
 
 public class BlockDrop {

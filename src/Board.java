@@ -1,10 +1,9 @@
+import dropblock.utils.GLog;
+
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 
-/**
- * Created by bjorn on 4/19/14.
- */
 public class Board {
     private JButton stopButton;
     private JButton startButton;
@@ -17,6 +16,7 @@ public class Board {
     private JPanel contentPanel;
     private JTextArea useArrowKeysToTextArea;
     private Timer timer;
+    private State state;
 
     public Board() {
         startButton.addActionListener(e -> start());
@@ -27,7 +27,8 @@ public class Board {
         JFrame frame = new JFrame("Drop Block");
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         frame.getContentPane().add(contentPanel);
-        frame.setMinimumSize(new Dimension(520, 600));
+        frame.setMinimumSize(new Dimension(520, 649));
+        frame.setResizable(false);
         frame.setLocationRelativeTo(null);
         frame.pack();
         controlPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -35,14 +36,17 @@ public class Board {
     }
 
     private void createUIComponents() {
-        gamePanel = new GamePanel();
+        state = new State();
+        gamePanel = new GamePanel(state);
     }
 
     private void start() {
         stop();
         if (timer == null) {
-            timer = new Timer(1, e -> {
+            timer = new Timer(1000, e -> {
                 GLog.info("Timer.");
+                state.tick();
+                gamePanel.repaint();
             });
         }
         if (timer.isRunning()) {

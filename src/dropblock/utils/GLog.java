@@ -1,3 +1,5 @@
+package dropblock.utils;
+
 import java.util.logging.Logger;
 
 public class GLog {
