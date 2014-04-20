@@ -3,8 +3,9 @@ import dropblock.utils.GLog;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
+import java.awt.event.KeyEvent;
 
-public class Board {
+public class Board implements GameFrame.GameKeyListener {
     private JButton stopButton;
     private JButton startButton;
     private JButton pauseButton;
@@ -21,10 +22,12 @@ public class Board {
     public Board() {
         startButton.addActionListener(e -> start());
         stopButton.addActionListener(e -> stop());
+        pauseButton.addActionListener(e -> pause());
     }
 
-    public void showBoard () {
-        JFrame frame = new JFrame("Drop Block");
+    public void showBoard() {
+        GameFrame frame = new GameFrame();
+        frame.addGameKeyListener(this);
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         frame.getContentPane().add(contentPanel);
         frame.setMinimumSize(new Dimension(520, 649));
@@ -37,11 +40,11 @@ public class Board {
 
     private void createUIComponents() {
         state = new State();
+
         gamePanel = new GamePanel(state);
     }
 
     private void start() {
-        stop();
         if (timer == null) {
             timer = new Timer(1000, e -> {
                 GLog.info("Timer.");
@@ -62,6 +65,8 @@ public class Board {
         }
         pause();
         timer = null;
+        state.endCurrentGame();
+        gamePanel.repaint();
         GLog.info("Stopped.");
     }
 
@@ -71,5 +76,38 @@ public class Board {
         }
         timer.stop();
         GLog.info("Paused.");
+    }
+
+    @Override
+    public void gameKeyTriggered(KeyEvent e) {
+        GLog.info("Key pressed!");
+        int pressedChar = e.getKeyCode();
+        switch(pressedChar) {
+            case 37: //left arrow
+                state.moveLeft();
+                break;
+            case 39: //right arrow
+                state.moveRight();
+                break;
+            case 40: //down arrow
+                state.moveDown();
+                break;
+            case 82: //4
+                state.rotate();
+                break;
+            case 68: //d
+                state.drop();
+                break;
+            case 80: //p
+                pause();
+                break;
+            case 83: //s
+                start();
+                break;
+            case 84: //t
+                stop();
+                break;
+        }
+        gamePanel.repaint();
     }
 }

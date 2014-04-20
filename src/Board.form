@@ -57,26 +57,10 @@
           </grid>
           <component id="ddf0b" class="javax.swing.JButton" binding="stopButton" default-binding="true">
             <constraints>
-              <grid row="8" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
-            </constraints>
-            <properties>
-              <text value="Stop"/>
-            </properties>
-          </component>
-          <component id="17f5" class="javax.swing.JButton" binding="startButton" default-binding="true">
-            <constraints>
-              <grid row="9" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
-            </constraints>
-            <properties>
-              <text value="Start"/>
-            </properties>
-          </component>
-          <component id="9252" class="javax.swing.JButton" binding="pauseButton" default-binding="true">
-            <constraints>
               <grid row="10" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
-              <text value="Pause"/>
+              <text value="Stop"/>
             </properties>
           </component>
           <grid id="18391" layout-manager="GridLayoutManager" row-count="1" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
@@ -156,6 +140,22 @@
               <lineWrap value="true"/>
               <text value="Use arrow keys to move, R to rotate and D to drop."/>
               <wrapStyleWord value="true"/>
+            </properties>
+          </component>
+          <component id="17f5" class="javax.swing.JButton" binding="startButton" default-binding="true">
+            <constraints>
+              <grid row="8" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <text value="Start"/>
+            </properties>
+          </component>
+          <component id="9252" class="javax.swing.JButton" binding="pauseButton" default-binding="true">
+            <constraints>
+              <grid row="9" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <text value="Pause"/>
             </properties>
           </component>
         </children>

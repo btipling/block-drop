@@ -1,5 +1,6 @@
 import blocks.Block;
 import blocks.SBlock;
+import dropblock.utils.GLog;
 
 import java.util.ArrayList;
 
@@ -65,6 +66,11 @@ public class State {
         return boardState;
     }
 
+    public void endCurrentGame() {
+        currentDroppingBlock = null;
+        zeroBoardState();
+    }
+
     private void zeroBoardState() {
         ArrayList<int[]> setUpList = new ArrayList<int[]>();
         for (int i = 0; i < NUM_ROWS; i++) {
@@ -73,5 +79,32 @@ public class State {
             });
         }
         boardState = setUpList.toArray(new int[NUM_COLS][NUM_ROWS]);
+    }
+
+    public void rotate() {
+        GLog.info("rotate");
+        currentDroppingBlock.rotate();
+    }
+
+    public void drop() {
+        GLog.info("dropping");
+    }
+
+    public void moveLeft() {
+        if (currentBlockPos[0] == 0) {
+            return;
+        }
+        currentBlockPos[0]--;
+    }
+
+    public void moveRight() {
+        if (currentBlockPos[0] + currentDroppingBlock.getCurrentRotation()[0].length >= NUM_ROWS) {
+            return;
+        }
+        currentBlockPos[0]++;
+    }
+
+    public void moveDown() {
+        currentBlockPos[1]++;
     }
 }
