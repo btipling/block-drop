@@ -50,6 +50,54 @@ public abstract class Block {
         return 0;
     }
 
+    /**
+     * Returns the row in the block that has the last actual block piece.
+     * @return The bottom border row.
+     */
+    public int getBottomBorderRow() {
+       int[][] rotation = getCurrentRotation();
+       for (int r = rotation.length - 1; r >= 0; r--) {
+           for (int c = 0; c < rotation[r].length; c++) {
+               if (rotation[r][c] > 0) {
+                   return r;
+               }
+           }
+       }
+       return 0;
+    }
+
+    /**
+     * Returns the left most row with an actual block piece.
+     * @return Return the left most border column.
+     */
+    public int getLeftBorderColumn() {
+        int[][] rotation = getCurrentRotation();
+        for (int c = 0; c < rotation[0].length; c++) {
+            for (int r = 0; r < rotation.length; r++) {
+                if (rotation[r][c] > 0) {
+                    return c;
+                }
+            }
+        }
+        return 0;
+    }
+
+    /**
+     * Returns the right most row with an actual block piece.
+     * @return The right most border column.
+     */
+    public int getRightBorderColumn() {
+        int[][] rotation = getCurrentRotation();
+        for (int c = rotation[0].length - 1; c >= 0; c--) {
+            for (int r = 0; r < rotation.length; r++) {
+                if (rotation[r][c] > 0) {
+                    return c + 1;
+                }
+            }
+        }
+        return 0;
+    }
+
     public abstract Color getColor();
     protected abstract int[][] getRotationA();
     protected abstract int[][] getRotationB();

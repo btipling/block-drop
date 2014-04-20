@@ -40,7 +40,6 @@ public class Board implements GameFrame.GameKeyListener {
 
     private void createUIComponents() {
         state = new State();
-
         gamePanel = new GamePanel(state);
     }
 

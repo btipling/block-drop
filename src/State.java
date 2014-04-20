@@ -42,6 +42,10 @@ public class State {
             for (int x = 0; x < row.length; x++) {
                 int yPos = currentBlockPos[1] + y;
                 int xPos = currentBlockPos[0] + x;
+                if (xPos < 0) {
+                    // Block rotations can have negative margins.
+                    continue;
+                }
                 if (yPos >= boardState.length) {
                     break;
                 }
@@ -91,20 +95,31 @@ public class State {
     }
 
     public void moveLeft() {
-        if (currentBlockPos[0] == 0) {
+        if (currentBlockPos == null) {
+            return;
+        }
+        int offset = currentDroppingBlock.getLeftBorderColumn();
+        if (currentBlockPos[0] + offset == 0) {
             return;
         }
         currentBlockPos[0]--;
     }
 
     public void moveRight() {
-        if (currentBlockPos[0] + currentDroppingBlock.getCurrentRotation()[0].length >= NUM_ROWS) {
+        if (currentBlockPos == null) {
+            return;
+        }
+        int offset = currentDroppingBlock.getRightBorderColumn();
+        if (currentBlockPos[0] + offset >= NUM_COLS) {
             return;
         }
         currentBlockPos[0]++;
     }
 
     public void moveDown() {
+        if (currentBlockPos == null) {
+            return;
+        }
         currentBlockPos[1]++;
     }
 }
