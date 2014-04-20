@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="770f5287-4553-47d1-b166-06dcc7a3d7d7" name="Default" comment="">
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/blocks/Block.java" afterPath="$PROJECT_DIR$/src/blocks/Block.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/State.java" afterPath="$PROJECT_DIR$/src/State.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
@@ -69,8 +70,8 @@
       <file leaf-file-name="State.java" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/State.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.3938731" vertical-offset="1245" max-vertical-offset="2085">
-              <caret line="95" column="44" selection-start-line="95" selection-start-column="44" selection-end-line="95" selection-end-column="44" />
+            <state vertical-scroll-proportion="0.6892779" vertical-offset="1755" max-vertical-offset="2280">
+              <caret line="138" column="76" selection-start-line="138" selection-start-column="76" selection-end-line="138" selection-end-column="76" />
               <folding />
             </state>
           </provider>
@@ -89,8 +90,8 @@
       <file leaf-file-name="Block.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/blocks/Block.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="988" max-vertical-offset="1695">
-              <caret line="93" column="31" selection-start-line="93" selection-start-column="31" selection-end-line="93" selection-end-column="31" />
+            <state vertical-scroll-proportion="0.0" vertical-offset="581" max-vertical-offset="1695">
+              <caret line="61" column="30" selection-start-line="61" selection-start-column="30" selection-end-line="61" selection-end-column="30" />
               <folding />
             </state>
           </provider>
@@ -567,7 +568,7 @@
       <created>1397916976443</created>
       <updated>1397916976443</updated>
       <workItem from="1397916977850" duration="721000" />
-      <workItem from="1397917702796" duration="34355000" />
+      <workItem from="1397917702796" duration="38193000" />
     </task>
     <task id="LOCAL-00001" summary="Adding a board UI.">
       <created>1397919386368</created>
@@ -605,11 +606,15 @@
       <created>1398019488945</created>
       <updated>1398019488945</updated>
     </task>
-    <option name="localTasksCounter" value="10" />
+    <task id="LOCAL-00010" summary="Rotation should not violate boundaries.">
+      <created>1398020209855</created>
+      <updated>1398020209855</updated>
+    </task>
+    <option name="localTasksCounter" value="11" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="35076000" />
+    <option name="totallyTimeSpent" value="38914000" />
   </component>
   <component name="TodoView" selected-index="0">
     <todo-panel id="selected-file">
@@ -721,7 +726,8 @@
     <MESSAGE value="Add some key events." />
     <MESSAGE value="Improve drawing speed, resize board." />
     <MESSAGE value="Improve movement boundaries." />
-    <option name="LAST_COMMIT_MESSAGE" value="Improve movement boundaries." />
+    <MESSAGE value="Rotation should not violate boundaries." />
+    <option name="LAST_COMMIT_MESSAGE" value="Rotation should not violate boundaries." />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -810,16 +816,16 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/blocks/Block.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="988" max-vertical-offset="1695">
-          <caret line="93" column="31" selection-start-line="93" selection-start-column="31" selection-end-line="93" selection-end-column="31" />
+        <state vertical-scroll-proportion="0.0" vertical-offset="581" max-vertical-offset="1695">
+          <caret line="61" column="30" selection-start-line="61" selection-start-column="30" selection-end-line="61" selection-end-column="30" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/State.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.3938731" vertical-offset="1245" max-vertical-offset="2085">
-          <caret line="95" column="44" selection-start-line="95" selection-start-column="44" selection-end-line="95" selection-end-column="44" />
+        <state vertical-scroll-proportion="0.6892779" vertical-offset="1755" max-vertical-offset="2280">
+          <caret line="138" column="76" selection-start-line="138" selection-start-column="76" selection-end-line="138" selection-end-column="76" />
           <folding />
         </state>
       </provider>

@@ -7,6 +7,7 @@ import java.util.ArrayList;
 public class State {
     public static final int DISPLAY_ROW_START = 2;
     private int[][] boardState;
+    private int[][] storedBoardState;
     private Block currentDroppingBlock = null;
     private int[] currentBlockPos;
     public static final int NUM_ROWS = 22;
@@ -27,12 +28,12 @@ public class State {
         if (currentDroppingBlock == null) {
             currentDroppingBlock = getNewRandomBlock();
         } else {
-            moveBlockDown();
+            moveDown();
         }
     }
 
     public void updateGameBoard() {
-        zeroBoardState();
+        copyBoardState(storedBoardState, boardState);
         if (currentDroppingBlock == null) {
             return;
         }
@@ -59,13 +60,6 @@ public class State {
         }
     }
 
-    private void moveBlockDown() {
-        currentBlockPos[1]++;
-        if (currentBlockPos[1] >= NUM_ROWS) {
-            currentDroppingBlock = null;
-        }
-    }
-
     public int[][] getBoardState() {
         return boardState;
     }
@@ -76,17 +70,31 @@ public class State {
     }
 
     private void zeroBoardState() {
-        ArrayList<int[]> setUpList = new ArrayList<int[]>();
+        boardState = newSetupList().toArray(new int[NUM_COLS][NUM_ROWS]);
+        storedBoardState = newSetupList().toArray(new int[NUM_COLS][NUM_ROWS]);
+    }
+
+    private ArrayList<int[]> newSetupList() {
+        ArrayList<int[]> setUpList = new ArrayList<>();
         for (int i = 0; i < NUM_ROWS; i++) {
             setUpList.add(new int[]{
                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
             });
         }
-        boardState = setUpList.toArray(new int[NUM_COLS][NUM_ROWS]);
+        return setUpList;
+    }
+
+    private void copyBoardState(int[][] a, int[][] b) {
+        for (int i = 0; i < a.length; i++) {
+            System.arraycopy(a[i], 0, b[i], 0, a[i].length);
+        }
     }
 
     public void rotate() {
         GLog.info("rotate");
+        if (currentBlockPos == null || currentDroppingBlock == null) {
+            return;
+        }
         currentDroppingBlock.rotate();
         int offset = currentDroppingBlock.getLeftBorderColumn();
         while(currentBlockPos[0] + offset < 0) {
@@ -103,7 +111,7 @@ public class State {
     }
 
     public void moveLeft() {
-        if (currentBlockPos == null) {
+        if (currentBlockPos == null || currentDroppingBlock == null) {
             return;
         }
         int offset = currentDroppingBlock.getLeftBorderColumn();
@@ -114,7 +122,7 @@ public class State {
     }
 
     public void moveRight() {
-        if (currentBlockPos == null) {
+        if (currentBlockPos == null || currentDroppingBlock == null) {
             return;
         }
         int offset = currentDroppingBlock.getRightBorderColumn();
@@ -125,9 +133,14 @@ public class State {
     }
 
     public void moveDown() {
-        if (currentBlockPos == null) {
+        if (currentBlockPos == null || currentDroppingBlock == null) {
+            return;
+        }
+        if (currentBlockPos[1] + currentDroppingBlock.getBottomBorderRow() >= NUM_ROWS) {
+            currentDroppingBlock = null;
             return;
         }
         currentBlockPos[1]++;
     }
+
 }

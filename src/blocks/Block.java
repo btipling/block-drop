@@ -59,7 +59,7 @@ public abstract class Block {
        for (int r = rotation.length - 1; r >= 0; r--) {
            for (int c = 0; c < rotation[r].length; c++) {
                if (rotation[r][c] > 0) {
-                   return r;
+                   return r + 1;
                }
            }
        }
