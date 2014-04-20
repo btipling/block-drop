@@ -88,6 +88,14 @@ public class State {
     public void rotate() {
         GLog.info("rotate");
         currentDroppingBlock.rotate();
+        int offset = currentDroppingBlock.getLeftBorderColumn();
+        while(currentBlockPos[0] + offset < 0) {
+           moveRight();
+        }
+        offset = currentDroppingBlock.getRightBorderColumn();
+        while (currentBlockPos[0] + offset > NUM_COLS) {
+            moveLeft();
+        }
     }
 
     public void drop() {
