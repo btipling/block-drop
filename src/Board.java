@@ -30,7 +30,7 @@ public class Board implements GameFrame.GameKeyListener {
         frame.addGameKeyListener(this);
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         frame.getContentPane().add(contentPanel);
-        frame.setMinimumSize(new Dimension(520, 649));
+        frame.setMinimumSize(new Dimension(520, 645));
         frame.setResizable(false);
         frame.setLocationRelativeTo(null);
         frame.pack();
@@ -44,12 +44,17 @@ public class Board implements GameFrame.GameKeyListener {
         gamePanel = new GamePanel(state);
     }
 
+    private void updateGame() {
+        state.updateGameBoard();
+        gamePanel.repaint();
+    }
+
     private void start() {
         if (timer == null) {
             timer = new Timer(1000, e -> {
                 GLog.info("Timer.");
                 state.tick();
-                gamePanel.repaint();
+                updateGame();
             });
         }
         if (timer.isRunning()) {
@@ -66,7 +71,7 @@ public class Board implements GameFrame.GameKeyListener {
         pause();
         timer = null;
         state.endCurrentGame();
-        gamePanel.repaint();
+        updateGame();
         GLog.info("Stopped.");
     }
 
@@ -108,6 +113,6 @@ public class Board implements GameFrame.GameKeyListener {
                 stop();
                 break;
         }
-        gamePanel.repaint();
+        updateGame();
     }
 }

@@ -5,10 +5,11 @@ import dropblock.utils.GLog;
 import java.util.ArrayList;
 
 public class State {
+    public static final int DISPLAY_ROW_START = 2;
     private int[][] boardState;
     private Block currentDroppingBlock = null;
     private int[] currentBlockPos;
-    public static final int NUM_ROWS = 24;
+    public static final int NUM_ROWS = 22;
     public static final int NUM_COLS = 10;
 
     public State() {
@@ -28,10 +29,9 @@ public class State {
         } else {
             moveBlockDown();
         }
-        updateGameBoard();
     }
 
-    private void updateGameBoard() {
+    public void updateGameBoard() {
         zeroBoardState();
         if (currentDroppingBlock == null) {
             return;
