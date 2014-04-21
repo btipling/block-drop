@@ -96,14 +96,84 @@ public class State {
             return;
         }
         currentDroppingBlock.rotate();
-        int offset = currentDroppingBlock.getLeftBorderColumn();
-        while(currentBlockPos[0] + offset < 0) {
-           moveRight();
+        int previousXPos = currentBlockPos[0];
+        int previousYPos = currentBlockPos[1];
+        int [][] rotation = currentDroppingBlock.getCurrentRotation();
+        int max_moves = rotation[0].length;
+        int max_upward_movements = rotation.length;
+        int movements = 0;
+        while (movements < max_moves && (pastLeftEdge() || isObstructed())) {
+            // Possibly obstructed to the left, move right a bit.
+            moveRight();
+            movements++;
         }
-        offset = currentDroppingBlock.getRightBorderColumn();
-        while (currentBlockPos[0] + offset > NUM_COLS) {
+        while (movements < max_moves && (pastRightEdge() || isObstructed())) {
+            // Maybe obstructed to the right, revert any rightward movements and move left a bit.
+            currentBlockPos[0] = previousXPos;
+            moveLeft();
+            movements++;
+        }
+        if (!isObstructed()) {
+            return;
+        }
+        // Still obstructed, revert any left or right movements and try moving up a bit.
+        currentBlockPos[0] = previousXPos;
+        // First get away from edge if any before moving up:
+        while(pastLeftEdge()) {
+            moveRight();
+        }
+        while(pastRightEdge()) {
             moveLeft();
         }
+        // Now move up.
+        movements = 0;
+        while (isObstructed() && movements < max_upward_movements) {
+            currentBlockPos[1]--;
+            movements++;
+        }
+        if (isObstructed()) {
+            // Can't rotate, revert rotate and any moves.
+            currentBlockPos[0] = previousXPos;
+            currentBlockPos[1] = previousYPos;
+            currentDroppingBlock.rotateBack();
+        }
+    }
+
+    private boolean pastLeftEdge() {
+        int offset = currentDroppingBlock.getLeftBorderColumn();
+        return currentBlockPos[0] + offset < 0;
+    }
+
+    private boolean pastRightEdge() {
+        int offset = currentDroppingBlock.getRightBorderColumn();
+        return currentBlockPos[0] + offset > NUM_COLS;
+    }
+
+    /**
+     * Check if block is currently obstructed.
+     * @return true if it is.
+     */
+    private boolean isObstructed() {
+        if (pastLeftEdge()) {
+            return true;
+        }
+        if (pastRightEdge()) {
+            return true;
+        }
+        int[][] rotation = currentDroppingBlock.getCurrentRotation();
+        for(int i = 0; i < rotation.length; i++) {
+            for (int j = 0; j < rotation[i].length; j++) {
+                if (rotation[i][j] == 0) {
+                    continue;
+                }
+                int xPos = currentBlockPos[0] + j;
+                int yPos = currentBlockPos[1] + i;
+                if (storedBoardState[yPos][xPos] > 0) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     public void drop() {

@@ -40,10 +40,27 @@ public abstract class Block {
     }
 
     public void rotate() {
-        currentRotation++;
-        if (currentRotation >= rotations.length) {
-            currentRotation = 0;
+        currentRotation = getNextRotationIndex();
+    }
+
+    public void rotateBack() {
+        currentRotation = getPreviousRotationIndex();
+    }
+
+    private int getPreviousRotationIndex() {
+        int previous = currentRotation - 1;
+        if (previous < 0) {
+            return rotations.length - 1;
         }
+        return previous;
+    }
+
+    private int getNextRotationIndex() {
+        int next = currentRotation + 1;
+        if (next >= rotations.length) {
+            return 0;
+        }
+        return next;
     }
 
     public int getBlockType() {
