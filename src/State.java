@@ -116,18 +116,49 @@ public class State {
         }
         int offset = currentDroppingBlock.getLeftBorderColumn();
         if (currentBlockPos[0] + offset == 0) {
+            // On left edge.
             return;
+        }
+        int[][] rotation = currentDroppingBlock.getCurrentRotation();
+        for (int i = 0; i < rotation.length; i++) {
+            for (int j = 0; j <= offset; j++) {
+                if (rotation[i][j] == 0) {
+                    continue;
+                }
+                int yPos = currentBlockPos[1] + i;
+                int xPos = currentBlockPos[0] + j - 1;
+                if (storedBoardState[yPos][xPos] > 0) {
+                    // Block is blocked to the left.
+                    return;
+                }
+            }
         }
         currentBlockPos[0]--;
     }
 
     public void moveRight() {
         if (currentBlockPos == null || currentDroppingBlock == null) {
+            // No current block;
             return;
         }
         int offset = currentDroppingBlock.getRightBorderColumn();
-        if (currentBlockPos[0] + offset >= NUM_COLS) {
+        if (currentBlockPos[0] + offset + 1 >= NUM_COLS) {
+            // On right edge.
             return;
+        }
+        int[][] rotation = currentDroppingBlock.getCurrentRotation();
+        for (int i = 0; i < rotation.length; i++) {
+            for (int j = 0; j <= offset; j++) {
+                if (rotation[i][j] == 0) {
+                    continue;
+                }
+                int yPos = currentBlockPos[1] + i;
+                int xPos = currentBlockPos[0] + j + 1;
+                if (storedBoardState[yPos][xPos] > 0) {
+                    // Block is blocked to the right.
+                    return;
+                }
+            }
         }
         currentBlockPos[0]++;
     }
@@ -136,11 +167,31 @@ public class State {
         if (currentBlockPos == null || currentDroppingBlock == null) {
             return;
         }
-        if (currentBlockPos[1] + currentDroppingBlock.getBottomBorderRow() >= NUM_ROWS) {
-            currentDroppingBlock = null;
+        int offset = currentDroppingBlock.getBottomBorderRow();
+        if (currentBlockPos[1] + offset + 1 >= NUM_ROWS) {
+            hitBottom();
             return;
         }
+        int[][] rotation = currentDroppingBlock.getCurrentRotation();
+        for (int i = 0; i <= offset; i++) {
+            for (int j = 0; j < rotation[i].length; j++) {
+                if (rotation[i][j] == 0) {
+                    continue;
+                }
+                int yPos = currentBlockPos[1] + i + 1;
+                int xPos = currentBlockPos[0] + j;
+                if (storedBoardState[yPos][xPos] > 0) {
+                    hitBottom();
+                    return;
+                }
+            }
+        }
         currentBlockPos[1]++;
+    }
+
+    private void hitBottom() {
+        copyBoardState(boardState, storedBoardState);
+        currentDroppingBlock = null;
     }
 
 }
