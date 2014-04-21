@@ -146,7 +146,7 @@ public class State {
 
     private boolean pastRightEdge() {
         int offset = currentDroppingBlock.getRightBorderColumn();
-        return currentBlockPos[0] + offset > NUM_COLS;
+        return currentBlockPos[0] + offset >= NUM_COLS;
     }
 
     /**
@@ -168,7 +168,11 @@ public class State {
                 }
                 int xPos = currentBlockPos[0] + j;
                 int yPos = currentBlockPos[1] + i;
-                if (storedBoardState[yPos][xPos] > 0) {
+                try {
+                    if (storedBoardState[yPos][xPos] > 0) {
+                        return true;
+                    }
+                } catch (Exception e) {
                     return true;
                 }
             }
@@ -184,26 +188,10 @@ public class State {
         if (currentBlockPos == null || currentDroppingBlock == null) {
             return;
         }
-        int offset = currentDroppingBlock.getLeftBorderColumn();
-        if (currentBlockPos[0] + offset == 0) {
-            // On left edge.
-            return;
-        }
-        int[][] rotation = currentDroppingBlock.getCurrentRotation();
-        for (int i = 0; i < rotation.length; i++) {
-            for (int j = 0; j <= offset; j++) {
-                if (rotation[i][j] == 0) {
-                    continue;
-                }
-                int yPos = currentBlockPos[1] + i;
-                int xPos = currentBlockPos[0] + j - 1;
-                if (storedBoardState[yPos][xPos] > 0) {
-                    // Block is blocked to the left.
-                    return;
-                }
-            }
-        }
         currentBlockPos[0]--;
+        if (isObstructed()) {
+            currentBlockPos[0]++;
+        }
     }
 
     public void moveRight() {
@@ -211,26 +199,10 @@ public class State {
             // No current block;
             return;
         }
-        int offset = currentDroppingBlock.getRightBorderColumn();
-        if (currentBlockPos[0] + offset + 1 >= NUM_COLS) {
-            // On right edge.
-            return;
-        }
-        int[][] rotation = currentDroppingBlock.getCurrentRotation();
-        for (int i = 0; i < rotation.length; i++) {
-            for (int j = 0; j <= offset; j++) {
-                if (rotation[i][j] == 0) {
-                    continue;
-                }
-                int yPos = currentBlockPos[1] + i;
-                int xPos = currentBlockPos[0] + j + 1;
-                if (storedBoardState[yPos][xPos] > 0) {
-                    // Block is blocked to the right.
-                    return;
-                }
-            }
-        }
         currentBlockPos[0]++;
+        if (isObstructed()) {
+            currentBlockPos[0]--;
+        }
     }
 
     public void moveDown() {
