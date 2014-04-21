@@ -43,7 +43,7 @@ public class State {
                 int yPos = currentBlockPos[1] + y;
                 int xPos = currentBlockPos[0] + x;
                 if (xPos < 0) {
-                    // Block rotations can have negative margins.
+                    // Block rotations can have negative positions because of rotation padding.
                     continue;
                 }
                 if (yPos >= boardState.length) {
