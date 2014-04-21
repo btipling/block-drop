@@ -1,3 +1,5 @@
+import blocks.Block;
+
 import javax.swing.*;
 import java.awt.*;
 
@@ -29,15 +31,15 @@ public class GamePanel extends JPanel {
         }
         int boxDimension = containerDimension - 2;
         int[][] boardState = state.getBoardState();
+        g2d.setColor(new Color(148, 148, 148));
+        g2d.fillRect(0, 0, width, height);
         for(int row = 0; row < numRows; row++) {
           int currentRow = row + State.DISPLAY_ROW_START;
           for (int col = 0; col < State.NUM_COLS; col++)  {
-              if (boardState[currentRow][col] > 0) {
-                  g2d.setColor(new Color(128, 13, 21));
-              } else {
-                  g2d.setColor(new Color(148, 148, 148));
+              int blockType = boardState[currentRow][col];
+              if (blockType > 0) {
+                  Block.BLOCK_TYPES[blockType].drawBlock(g2d, col, row, containerDimension, boxDimension);
               }
-              g2d.fillRect(col * containerDimension + 1, row * containerDimension + 1, boxDimension, boxDimension);
           }
         }
     }

@@ -6,19 +6,41 @@ import java.awt.*;
 import java.util.Random;
 
 public abstract class Block {
-    public static enum BLOCK_TYPES {
-        NONE,
-        SBLOCK,
-        ZBLOCK,
-        LBLOCK,
-        JBLOCK,
-        TBLOCK,
-        IBLOCK,
-        OBLOCK,
-    };
+
     protected int[][][] rotations;
     private int currentRotation = 0;
+    public static final Block[] BLOCK_TYPES = new Block[]{
+        null,
+        new IBlock(),
+        new OBlock(),
+        new TBlock(),
+        new SBlock(),
+        new ZBlock(),
+        new JBlock(),
+        new LBlock(),
+    };
 
+    public static Block getRandomBlock() {
+        Random rand = new Random();
+        Block block = BLOCK_TYPES[rand.nextInt(BLOCK_TYPES.length - 1) + 1];
+        @SuppressWarnings("unchecked")
+        Class<Block> BlockType = (Class<Block>) block.getClass();
+        try {
+            return BlockType.newInstance();
+        } catch (Exception e) {
+            return new SBlock();
+        }
+    }
+
+    public static int getBlockType(Block blockToCheck) {
+        for(int i = 1; i < BLOCK_TYPES.length; i++) {
+            Block block = BLOCK_TYPES[i];
+            if (blockToCheck.getClass().equals(block.getClass())) {
+                return i;
+            }
+        }
+        return 0;
+    }
 
     public Block() {
        GLog.info("Setting up a block.");
@@ -61,10 +83,6 @@ public abstract class Block {
             return 0;
         }
         return next;
-    }
-
-    public int getBlockType() {
-        return 0;
     }
 
     /**
@@ -115,10 +133,14 @@ public abstract class Block {
         return 0;
     }
 
+    public void drawBlock(Graphics2D g2d, int col, int row, int containerDimension, int boxDimension) {
+        g2d.setColor(getColor());
+        g2d.fillRect(col * containerDimension + 1, row * containerDimension + 1, boxDimension, boxDimension);
+    }
+
     public abstract Color getColor();
     protected abstract int[][] getRotationA();
     protected abstract int[][] getRotationB();
     protected abstract int[][] getRotationC();
     protected abstract int[][] getRotationD();
-
 }

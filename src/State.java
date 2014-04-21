@@ -1,5 +1,4 @@
 import blocks.Block;
-import blocks.SBlock;
 import dropblock.utils.GLog;
 
 import java.util.ArrayList;
@@ -19,7 +18,7 @@ public class State {
 
     private Block getNewRandomBlock() {
         currentBlockPos = new int[]{4, 0};
-        Block block = new SBlock();
+        Block block = Block.getRandomBlock();
         block.setupBlock();
         return block;
     }
@@ -54,7 +53,7 @@ public class State {
                     continue;
                 }
                 if (row[x] > 0) {
-                    boardState[yPos][xPos] = currentDroppingBlock.getBlockType();
+                    boardState[yPos][xPos] = Block.getBlockType(currentDroppingBlock);
                 }
             }
         }
@@ -100,17 +99,17 @@ public class State {
         int previousYPos = currentBlockPos[1];
         int [][] rotation = currentDroppingBlock.getCurrentRotation();
         int max_moves = rotation[0].length;
-        int max_upward_movements = rotation.length;
+        int max_upward_movements = rotation.length - 1;
         int movements = 0;
         while (movements < max_moves && (pastLeftEdge() || isObstructed())) {
             // Possibly obstructed to the left, move right a bit.
-            moveRight();
+            forceRight();
             movements++;
         }
         while (movements < max_moves && (pastRightEdge() || isObstructed())) {
             // Maybe obstructed to the right, revert any rightward movements and move left a bit.
             currentBlockPos[0] = previousXPos;
-            moveLeft();
+            forceLeft();
             movements++;
         }
         if (!isObstructed()) {
@@ -120,10 +119,10 @@ public class State {
         currentBlockPos[0] = previousXPos;
         // First get away from edge if any before moving up:
         while(pastLeftEdge()) {
-            moveRight();
+            forceRight();
         }
         while(pastRightEdge()) {
-            moveLeft();
+            forceLeft();
         }
         // Now move up.
         movements = 0;
@@ -188,10 +187,14 @@ public class State {
         if (currentBlockPos == null || currentDroppingBlock == null) {
             return;
         }
-        currentBlockPos[0]--;
+        forceLeft();
         if (isObstructed()) {
-            currentBlockPos[0]++;
+            forceRight();
         }
+    }
+
+    private void forceLeft() {
+        currentBlockPos[0]--;
     }
 
     public void moveRight() {
@@ -199,10 +202,14 @@ public class State {
             // No current block;
             return;
         }
-        currentBlockPos[0]++;
+        forceRight();
         if (isObstructed()) {
-            currentBlockPos[0]--;
+            forceLeft();
         }
+    }
+
+    private void forceRight() {
+        currentBlockPos[0]++;
     }
 
     public void moveDown() {
