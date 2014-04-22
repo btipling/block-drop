@@ -2,12 +2,20 @@ import blocks.Block;
 import dropblock.utils.GLog;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class State {
+
+    interface StateChangeListener {
+        public void stateChanged();
+    }
+    private List<StateChangeListener> newBlockListeners = new ArrayList<>();
+
     public static final int DISPLAY_ROW_START = 2;
     private int[][] boardState;
     private int[][] storedBoardState;
     private Block currentDroppingBlock = null;
+    private Block nextBlock = null;
     private int[] currentBlockPos;
     public static final int NUM_ROWS = 22;
     public static final int NUM_COLS = 10;
@@ -16,11 +24,30 @@ public class State {
         zeroBoardState();
     }
 
+    public Block getNextBlock() {
+        return nextBlock;
+    }
+
     private Block getNewRandomBlock() {
         currentBlockPos = new int[]{4, 0};
-        Block block = Block.getRandomBlock();
+        if (nextBlock == null) {
+            nextBlock = Block.getRandomBlock();
+        }
+        Block block = nextBlock;
+        nextBlock = Block.getRandomBlock();
         block.setupBlock();
+        fireStateChangeListners(newBlockListeners);
         return block;
+    }
+
+    private void fireStateChangeListners(List<StateChangeListener> listeners) {
+        for (StateChangeListener listener : listeners) {
+            listener.stateChanged();
+        }
+    }
+
+    public void addBlockDroppedListener(StateChangeListener listener) {
+        newBlockListeners.add(listener);
     }
     
     public void tick() {

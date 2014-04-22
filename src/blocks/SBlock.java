@@ -13,11 +13,12 @@ public class SBlock extends Block {
         {0, 1, 1,},
         {0, 0, 1,}
     };
+    protected int[][] rotationC = new int[][]{
+        {1, 0, 0,},
+        {1, 1, 0,},
+        {0, 1, 0,}
+    };
     protected static Color color = new Color(0, 128, 8);
-
-    public void drawBox() {
-
-    }
 
     @Override
     public Color getColor() {
@@ -41,7 +42,7 @@ public class SBlock extends Block {
 
     @Override
     protected int[][] getRotationD() {
-        return rotationB;
+        return rotationC;
     }
 
 }

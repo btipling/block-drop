@@ -10,7 +10,7 @@ public class GameFrame extends JFrame {
         public void gameKeyTriggered(KeyEvent e);
     }
 
-    private List<GameKeyListener> listeners = new ArrayList<GameKeyListener>();
+    private List<GameKeyListener> listeners = new ArrayList<>();
 
     private class CustomKeyDispatcher implements KeyEventDispatcher {
 

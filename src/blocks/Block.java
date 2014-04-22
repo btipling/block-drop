@@ -138,6 +138,10 @@ public abstract class Block {
         g2d.fillRect(col * containerDimension + 1, row * containerDimension + 1, boxDimension, boxDimension);
     }
 
+    public int[][] getDefaultRotation() {
+        return getRotationA();
+    }
+
     public abstract Color getColor();
     protected abstract int[][] getRotationA();
     protected abstract int[][] getRotationB();

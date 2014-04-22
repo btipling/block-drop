@@ -1,9 +1,8 @@
 import blocks.Block;
 
-import javax.swing.*;
 import java.awt.*;
 
-public class GamePanel extends JPanel {
+public class GamePanel extends DrawPanel {
 
     private State state;
 
@@ -12,12 +11,7 @@ public class GamePanel extends JPanel {
     }
 
     @Override
-    public void paintComponent(Graphics g) {
-        super.paintComponent(g);
-        doDrawing(g);
-    }
-
-    private void doDrawing(Graphics g) {
+    protected void doDrawing(Graphics g) {
         Graphics2D g2d = (Graphics2D) g;
         Dimension size = getSize();
         int width = new Double(size.getWidth()).intValue();

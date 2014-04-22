@@ -13,6 +13,11 @@ public class ZBlock extends Block {
         {0, 1, 1,},
         {0, 1, 0,}
     };
+    protected int[][] rotationC = new int[][]{
+        {0, 1, 0,},
+        {1, 1, 0,},
+        {1, 0, 0,}
+    };
     protected static Color color = new Color(128, 0, 21);
 
     public void drawBox() {
@@ -41,7 +46,7 @@ public class ZBlock extends Block {
 
     @Override
     protected int[][] getRotationD() {
-        return rotationB;
+        return rotationC;
     }
 
 }

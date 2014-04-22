@@ -25,7 +25,7 @@ public class LBlock extends Block {
     };
     @Override
     public Color getColor() {
-        return new Color(128, 41, 0);
+        return new Color(128, 67, 0);
     }
 
     @Override

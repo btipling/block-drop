@@ -15,6 +15,12 @@ public class IBlock extends Block {
         {0, 0, 1, 0},
         {0, 0, 1, 0},
     };
+    protected int[][] rotationC = new int[][]{
+        {0, 1, 0, 0},
+        {0, 1, 0, 0},
+        {0, 1, 0, 0},
+        {0, 1, 0, 0},
+    };
     @Override
     public Color getColor() {
         return new Color(0, 103, 128);
@@ -37,6 +43,6 @@ public class IBlock extends Block {
 
     @Override
     protected int[][] getRotationD() {
-        return rotationB;
+        return rotationC;
     }
 }
