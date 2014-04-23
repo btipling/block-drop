@@ -12,14 +12,18 @@ public class State {
     interface StateChangeListener {
         public void stateChanged();
     }
+
     private List<StateChangeListener> newBlockListeners = new ArrayList<>();
     private List<StateChangeListener> animationListeners = new ArrayList<>();
+    private List<StateChangeListener> scoreListeners = new ArrayList<>();
+
 
     public static final int DISPLAY_ROW_START = 2;
     private int score = 0;
     private int level = 0;
     private int lines = 0;
-    private boolean scored = false;
+    private int linesThisLevel = 0;
+    private int linesToIncreaseLevel = 0;
     private int[][] boardState;
     private int[][] storedBoardState;
     private Block currentDroppingBlock = null;
@@ -62,20 +66,21 @@ public class State {
     public void addAnimationStateListener(StateChangeListener listener) {
         animationListeners.add(listener);
     }
-    
+
+    public void addScoreStateListener(StateChangeListener listener) {
+        scoreListeners.add(listener);
+    }
+
     public void tick() {
         if (animationState > 0) {
             return;
         }
         GLog.info("ticking");
+        if (linesToIncreaseLevel == 0) {
+           linesToIncreaseLevel = level * 10 + 10;
+        }
         if (currentDroppingBlock == null) {
-            if (!scored) {
-                scored = true;
-                scoreGame();
-                return;
-            }
             currentDroppingBlock = getNewRandomBlock();
-            scored = false;
         } else {
             moveDown();
         }
@@ -99,6 +104,7 @@ public class State {
                 rowsToKill.add(r);
                 lineMultiples++;
                 lines++;
+                linesThisLevel++;
             }
             if (lineMultiples == 4) {
                 roundScore += scoreMultiples(lineMultiples);
@@ -106,7 +112,19 @@ public class State {
             }
         }
         score += roundScore + scoreMultiples(lineMultiples);
+        fireStateChangeListners(scoreListeners);
         killRows(rowsToKill);
+    }
+
+    private void checkLevel() {
+        if (linesThisLevel < linesToIncreaseLevel) {
+            return;
+        }
+        linesThisLevel = 0;
+        linesToIncreaseLevel = 10;
+        level++;
+        fireStateChangeListners(scoreListeners);
+        zeroBoardState();
     }
 
     private void killRows(List<Integer> rowsToKill) {
@@ -131,6 +149,7 @@ public class State {
             fireStateChangeListners(animationListeners);
             animationState--;
             GLog.info("animating finished.");
+            checkLevel();
             return;
         });
         timer.start();
@@ -401,9 +420,22 @@ public class State {
         currentBlockPos[1]++;
     }
 
+    public int getScore() {
+        return score;
+    }
+
+    public int getLines() {
+        return lines;
+    }
+
+    public int getLevel() {
+        return level;
+    }
+
     private void hitBottom() {
         copyBoardState(boardState, storedBoardState);
         currentDroppingBlock = null;
+        scoreGame();
     }
 
 }

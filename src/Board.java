@@ -15,7 +15,8 @@ public class Board implements GameFrame.GameKeyListener {
     private JLabel topScore;
     private JPanel nextPiecePanel;
     private JPanel contentPanel;
-    private JTextArea useArrowKeysToTextArea;
+    private JLabel levelLabel;
+    private JLabel linesLabel;
     private Timer timer;
     private State state;
 
@@ -44,6 +45,16 @@ public class Board implements GameFrame.GameKeyListener {
         gamePanel = new GamePanel(state);
         nextPiecePanel = new PreviewPanel();
         state.addAnimationStateListener(this::updateGame);
+        state.addScoreStateListener(this::updateScore);
+    }
+
+    private void updateScore() {
+        currentScore.setText(String.valueOf(state.getScore()));
+        levelLabel.setText(String.valueOf(state.getLevel()));
+        linesLabel.setText(String.valueOf(state.getLines()));
+        timer.stop();
+        timer = null;
+        start();
     }
 
     private void updateGame() {
@@ -53,7 +64,11 @@ public class Board implements GameFrame.GameKeyListener {
 
     private void start() {
         if (timer == null) {
-            timer = new Timer(1000, e -> {
+            int speed = 1000 - 100 * state.getLevel();
+            if (speed < 50) {
+                speed = 50;
+            }
+            timer = new Timer(speed, e -> {
                 GLog.info("Timer.");
                 state.tick();
                 updateGame();
