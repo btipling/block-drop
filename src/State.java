@@ -1,6 +1,7 @@
 import blocks.Block;
 import dropblock.utils.GLog;
 
+import javax.swing.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,6 +11,7 @@ public class State {
         public void stateChanged();
     }
     private List<StateChangeListener> newBlockListeners = new ArrayList<>();
+    private List<StateChangeListener> animationListeners = new ArrayList<>();
 
     public static final int DISPLAY_ROW_START = 2;
     private int[][] boardState;
@@ -19,6 +21,7 @@ public class State {
     private int[] currentBlockPos;
     public static final int NUM_ROWS = 22;
     public static final int NUM_COLS = 10;
+    private boolean animationState = false;
 
     public State() {
         zeroBoardState();
@@ -49,8 +52,16 @@ public class State {
     public void addBlockDroppedListener(StateChangeListener listener) {
         newBlockListeners.add(listener);
     }
+
+    public void addAnimationStateListener(StateChangeListener listener) {
+        animationListeners.add(listener);
+    }
     
     public void tick() {
+        if (animationState) {
+            return;
+        }
+        GLog.info("ticking");
         if (currentDroppingBlock == null) {
             currentDroppingBlock = getNewRandomBlock();
         } else {
@@ -208,6 +219,22 @@ public class State {
 
     public void drop() {
         GLog.info("dropping");
+        animationState = true;
+        final Timer timer = new Timer(2, null);
+        GLog.info("animating starting.");
+        timer.addActionListener(e -> {
+            GLog.info("animating.");
+            fireStateChangeListners(animationListeners);
+            if (currentDroppingBlock == null) {
+                animationState = false;
+                timer.stop();
+                GLog.info("animating finished.");
+                return;
+            }
+            moveDown();
+        });
+        timer.start();
+        GLog.info("Started.");
     }
 
     public void moveLeft() {

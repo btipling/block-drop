@@ -39,14 +39,11 @@ public class Board implements GameFrame.GameKeyListener {
     }
 
     private void createUIComponents() {
-        createState();
+        state = new State();
+        state.addBlockDroppedListener(() -> ((PreviewPanel) nextPiecePanel).drawNextBlock(state.getNextBlock()));
         gamePanel = new GamePanel(state);
         nextPiecePanel = new PreviewPanel();
-    }
-
-    private void createState() {
-        state = new State();
-        state.addBlockDroppedListener(()-> ((PreviewPanel) nextPiecePanel).drawNextBlock(state.getNextBlock()));
+        state.addAnimationStateListener(this::updateGame);
     }
 
     private void updateGame() {
