@@ -18,11 +18,13 @@ public abstract class Block {
         new ZBlock(),
         new JBlock(),
         new LBlock(),
+        new FlashBlock(),
     };
 
     public static Block getRandomBlock() {
         Random rand = new Random();
-        Block block = BLOCK_TYPES[rand.nextInt(BLOCK_TYPES.length - 1) + 1];
+        // -2 to exclude the FlashBlock, which is used just for drawing an animation.
+        Block block = BLOCK_TYPES[rand.nextInt(BLOCK_TYPES.length - 2) + 1];
         @SuppressWarnings("unchecked")
         Class<Block> BlockType = (Class<Block>) block.getClass();
         try {

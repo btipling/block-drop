@@ -3,9 +3,11 @@ import dropblock.utils.GLog;
 
 import javax.swing.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class State {
+
 
     interface StateChangeListener {
         public void stateChanged();
@@ -14,6 +16,10 @@ public class State {
     private List<StateChangeListener> animationListeners = new ArrayList<>();
 
     public static final int DISPLAY_ROW_START = 2;
+    private int score = 0;
+    private int level = 0;
+    private int lines = 0;
+    private boolean scored = false;
     private int[][] boardState;
     private int[][] storedBoardState;
     private Block currentDroppingBlock = null;
@@ -21,7 +27,7 @@ public class State {
     private int[] currentBlockPos;
     public static final int NUM_ROWS = 22;
     public static final int NUM_COLS = 10;
-    private boolean animationState = false;
+    private int animationState = 0;
 
     public State() {
         zeroBoardState();
@@ -58,15 +64,115 @@ public class State {
     }
     
     public void tick() {
-        if (animationState) {
+        if (animationState > 0) {
             return;
         }
         GLog.info("ticking");
         if (currentDroppingBlock == null) {
+            if (!scored) {
+                scored = true;
+                scoreGame();
+                return;
+            }
             currentDroppingBlock = getNewRandomBlock();
+            scored = false;
         } else {
             moveDown();
         }
+    }
+
+    private void scoreGame() {
+        int roundScore = 0;
+        int lineMultiples = 0;
+        List<Integer> rowsToKill = new ArrayList<>();
+        for (int r = 0; r < boardState.length; r++) {
+            boolean isComplete = true;
+            for (int c = 0; c < boardState[r].length; c++) {
+                if (boardState[r][c] == 0) {
+                    roundScore += scoreMultiples(lineMultiples);
+                    lineMultiples = 0;
+                    isComplete = false;
+                    break;
+                }
+            }
+            if (isComplete) {
+                rowsToKill.add(r);
+                lineMultiples++;
+                lines++;
+            }
+            if (lineMultiples == 4) {
+                roundScore += scoreMultiples(lineMultiples);
+                lineMultiples = 0;
+            }
+        }
+        score += roundScore + scoreMultiples(lineMultiples);
+        killRows(rowsToKill);
+    }
+
+    private void killRows(List<Integer> rowsToKill) {
+        if (rowsToKill.size() < 1) {
+            return;
+        }
+        animationState++;
+        GLog.info("kill row animating starting.");
+        for (Integer r : rowsToKill) {
+            for (int c = 0; c < boardState[r].length; c++) {
+                boardState[r][c] = Block.BLOCK_TYPES.length - 1; //The flash block type.
+            }
+        }
+        copyBoardState(boardState, storedBoardState);
+        fireStateChangeListners(animationListeners);
+        final Timer timer = new Timer(100, null);
+        timer.addActionListener(e -> {
+            GLog.info("animating.");
+            timer.stop();
+            removeRows(rowsToKill);
+            copyBoardState(boardState, storedBoardState);
+            fireStateChangeListners(animationListeners);
+            animationState--;
+            GLog.info("animating finished.");
+            return;
+        });
+        timer.start();
+        GLog.info("Started.");
+
+    }
+
+    private void removeRows(List<Integer> rowsToKill) {
+        int size = rowsToKill.size();
+        Integer[] rows = rowsToKill.toArray(new Integer[size]);
+        Arrays.sort(rows);
+        // Starts at bottom and moves up.
+        int iterations = 0;
+        for (int i = rows.length - 1; i >= 0; i--) {
+            // Each row to be removed is one line down for each iteration.
+            removeRow(rows[i] + iterations);
+            iterations++;
+        }
+    }
+
+    private void removeRow(int r) {
+        while (r > 0) {
+            System.arraycopy(boardState[r - 1], 0, boardState[r], 0, boardState[r].length);
+            r--;
+        }
+        for (int c = 0; c < boardState[0].length; c++) {
+            boardState[0][c] = 0;
+        }
+    }
+
+    private int scoreMultiples(int lineMultiples) {
+        switch (lineMultiples) {
+            case 1:
+                return 40 * (level + 1);
+            case 2:
+                return 100 * (level + 1);
+            case 3:
+                return 300 * (level + 1);
+            case 4:
+                return 1200 * (level + 1);
+        }
+        return 0;
     }
 
     public void updateGameBoard() {
@@ -104,6 +210,9 @@ public class State {
     public void endCurrentGame() {
         currentDroppingBlock = null;
         zeroBoardState();
+        score = 0;
+        lines = 0;
+        level = 0;
     }
 
     private void zeroBoardState() {
@@ -219,14 +328,14 @@ public class State {
 
     public void drop() {
         GLog.info("dropping");
-        animationState = true;
+        animationState++;
         final Timer timer = new Timer(2, null);
-        GLog.info("animating starting.");
+        GLog.info("drop animating starting.");
         timer.addActionListener(e -> {
             GLog.info("animating.");
             fireStateChangeListners(animationListeners);
             if (currentDroppingBlock == null) {
-                animationState = false;
+                animationState--;
                 timer.stop();
                 GLog.info("animating finished.");
                 return;
