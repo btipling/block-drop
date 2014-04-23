@@ -154,7 +154,7 @@ public class State {
         }
         copyBoardState(boardState, storedBoardState);
         fireStateChangeListners(animationListeners);
-        final Timer timer = new Timer(100, null);
+        final Timer timer = new Timer(75, null);
         timer.addActionListener(e -> {
             GLog.info("animating.");
             timer.stop();
