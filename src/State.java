@@ -16,9 +16,11 @@ public class State {
     private List<StateChangeListener> newBlockListeners = new ArrayList<>();
     private List<StateChangeListener> animationListeners = new ArrayList<>();
     private List<StateChangeListener> scoreListeners = new ArrayList<>();
+    private List<StateChangeListener> gameOverListeners = new ArrayList<>();
 
 
     public static final int DISPLAY_ROW_START = 2;
+    private boolean gameOver = true;
     private int score = 0;
     private int level = 0;
     private int lines = 0;
@@ -42,7 +44,7 @@ public class State {
     }
 
     private Block getNewRandomBlock() {
-        currentBlockPos = new int[]{4, 0};
+        currentBlockPos = new int[]{3, 0};
         if (nextBlock == null) {
             nextBlock = Block.getRandomBlock();
         }
@@ -71,9 +73,21 @@ public class State {
         scoreListeners.add(listener);
     }
 
+    public void addGameOverListener(StateChangeListener listener) {
+        gameOverListeners.add(listener);
+    }
+
     public void tick() {
         if (animationState > 0) {
             return;
+        }
+        if (gameOver) {
+            gameOver = false;
+            level = 0;
+            score = 0;
+            lines = 0;
+            fireStateChangeListners(scoreListeners);
+            zeroBoardState();
         }
         GLog.info("ticking");
         if (linesToIncreaseLevel == 0) {
@@ -436,6 +450,10 @@ public class State {
         copyBoardState(boardState, storedBoardState);
         currentDroppingBlock = null;
         scoreGame();
+        if (currentBlockPos[1] < 1) {
+            gameOver = true;
+            fireStateChangeListners(gameOverListeners);
+        }
     }
 
 }

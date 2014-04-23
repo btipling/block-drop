@@ -46,6 +46,7 @@ public class Board implements GameFrame.GameKeyListener {
         nextPiecePanel = new PreviewPanel();
         state.addAnimationStateListener(this::updateGame);
         state.addScoreStateListener(this::updateScore);
+        state.addGameOverListener(this::pause);
     }
 
     private void updateScore() {
