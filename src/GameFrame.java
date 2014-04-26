@@ -28,7 +28,7 @@ public class GameFrame extends JFrame {
     }
 
     public GameFrame() {
-        super("Drop Block");
+        super("BlockDrop");
         KeyboardFocusManager manager = KeyboardFocusManager.getCurrentKeyboardFocusManager();
         manager.addKeyEventDispatcher(new CustomKeyDispatcher());
     }

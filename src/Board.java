@@ -1,11 +1,15 @@
 import dropblock.utils.GLog;
 
 import javax.swing.*;
+import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.KeyEvent;
+import java.text.NumberFormat;
+import java.util.prefs.Preferences;
 
 public class Board implements GameFrame.GameKeyListener {
+    final static String TOP_SCORE_PREF = "topscorepref";
     private JButton stopButton;
     private JButton startButton;
     private JButton pauseButton;
@@ -17,13 +21,34 @@ public class Board implements GameFrame.GameKeyListener {
     private JPanel contentPanel;
     private JLabel levelLabel;
     private JLabel linesLabel;
+    private JLabel scoreLabel;
+    private JLabel topScoreLabel;
+    private JLabel levelTitleLabel;
+    private JLabel linesTitleLabel;
+    private JTextArea instructionsLabel;
+    private JLabel nextLabel;
     private Timer timer;
     private State state;
+    private Preferences prefs;
 
-    public Board() {
+    public Board(Preferences prefs, Font customFont) {
+        this.prefs = prefs;
         startButton.addActionListener(e -> start());
         stopButton.addActionListener(e -> stop());
         pauseButton.addActionListener(e -> pause());
+        GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+        customFont = customFont.deriveFont(15.0f);
+        Object[] labels = new Object[]{topScore, scoreLabel, currentScore, linesLabel, linesTitleLabel, levelLabel,
+            levelTitleLabel, instructionsLabel, topScoreLabel, nextLabel, startButton, stopButton, pauseButton};
+        for (Object label : labels) {
+            JComponent component = (JComponent) label;
+            component.setFont(customFont);
+            component.setForeground(new Color(66, 66, 66));
+            component.setBackground(Color.WHITE);
+            component.setOpaque(true);
+        }
+        int score = prefs.getInt(TOP_SCORE_PREF, 0);
+        topScore.setText(NumberFormat.getNumberInstance().format(score));
     }
 
     public void showBoard() {
@@ -40,6 +65,7 @@ public class Board implements GameFrame.GameKeyListener {
     }
 
     private void createUIComponents() {
+        contentPanel = new ContentPanel();
         state = new State();
         state.addBlockDroppedListener(() -> ((PreviewPanel) nextPiecePanel).drawNextBlock(state.getNextBlock()));
         gamePanel = new GamePanel(state);
@@ -50,9 +76,17 @@ public class Board implements GameFrame.GameKeyListener {
     }
 
     private void updateScore() {
-        currentScore.setText(String.valueOf(state.getScore()));
-        levelLabel.setText(String.valueOf(state.getLevel()));
-        linesLabel.setText(String.valueOf(state.getLines()));
+        NumberFormat numberFormatter = NumberFormat.getNumberInstance();
+        int score = state.getScore();
+        int topScoreValue = prefs.getInt(TOP_SCORE_PREF, 0);
+        String formattedScore = String.valueOf(numberFormatter.format(score));
+        if (score > topScoreValue) {
+            prefs.putInt(TOP_SCORE_PREF, score);
+            topScore.setText(formattedScore);
+        }
+        currentScore.setText(formattedScore);
+        levelLabel.setText(String.valueOf(numberFormatter.format(state.getLevel())));
+        linesLabel.setText(String.valueOf(numberFormatter.format(state.getLines())));
         timer.stop();
         timer = null;
         start();

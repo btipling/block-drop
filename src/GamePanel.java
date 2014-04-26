@@ -33,8 +33,6 @@ public class GamePanel extends DrawPanel {
         hsb[2] = 1.0f;
         hsb[1] = 0.15f;
         bgColor = Color.getHSBColor(hsb[0], hsb[1], hsb[2]);
-        g2d.setColor(bgColor);
-        Color black = new Color(0, 0, 0, 127);
         Color white = new Color(255, 255, 255, 127);
         GradientPaint gradientPaint = new GradientPaint(0, width, bgColor, 0, 1, white);
         g2d.setPaint(gradientPaint);
