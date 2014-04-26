@@ -1,4 +1,5 @@
 import blocks.Block;
+import com.sun.jdi.connect.Connector;
 import dropblock.utils.GLog;
 
 import javax.swing.*;
@@ -138,7 +139,6 @@ public class State {
         linesToIncreaseLevel = 10;
         level++;
         fireStateChangeListners(scoreListeners);
-        zeroBoardState();
     }
 
     private void killRows(List<Integer> rowsToKill) {
@@ -242,10 +242,32 @@ public class State {
 
     public void endCurrentGame() {
         currentDroppingBlock = null;
-        zeroBoardState();
         score = 0;
         lines = 0;
         level = 0;
+        killBoard();
+    }
+
+    private void killBoard() {
+        animationState++;
+        final Timer timer = new Timer(5, null);
+        GLog.info("kill board animating starting.");
+        final int[] coords = new int[]{0, 0};
+        timer.addActionListener(e -> {
+            storedBoardState[coords[1]][coords[0]] = Block.getRandomBlockType();
+            fireStateChangeListners(animationListeners);
+            coords[0]++;
+            if (coords[0] >= boardState[0].length) {
+                coords[1]++;
+                coords[0] = 0;
+            }
+            if (coords[1] >= boardState.length) {
+                timer.stop();
+                animationState--;
+                zeroBoardState();
+            }
+        });
+        timer.start();
     }
 
     private void zeroBoardState() {
@@ -451,6 +473,7 @@ public class State {
         currentDroppingBlock = null;
         scoreGame();
         if (currentBlockPos[1] < 1) {
+            endCurrentGame();
             gameOver = true;
             fireStateChangeListners(gameOverListeners);
         }

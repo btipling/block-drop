@@ -18,7 +18,7 @@ public class SBlock extends Block {
         {1, 1, 0,},
         {0, 1, 0,}
     };
-    protected static Color color = new Color(0, 128, 8);
+    protected static Color color = new Color(69, 197, 69);
 
     @Override
     public Color getColor() {

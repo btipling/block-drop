@@ -25,7 +25,7 @@ public class JBlock extends Block {
     };
     @Override
     public Color getColor() {
-        return new Color(19, 0, 128);
+        return new Color(69, 122, 197);
     }
 
     @Override

@@ -14,7 +14,7 @@ public class PreviewPanel extends DrawPanel {
         int width = new Double(size.getWidth()).intValue();
         int columnSize = width/NUM_COLS;
         int height = new Double(size.getHeight()).intValue();
-        g2d.setColor(new Color(148, 148, 148));
+        g2d.setColor(new Color(255, 255, 255));
         g2d.fillRect(0, 0, width, height);
         if (nextBlock == null) {
             return;

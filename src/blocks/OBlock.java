@@ -11,7 +11,7 @@ public class OBlock extends Block {
     };
     @Override
     public Color getColor() {
-        return new Color(128, 114, 0);
+        return new Color(226, 226, 79);
     }
 
     @Override

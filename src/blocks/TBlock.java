@@ -25,7 +25,7 @@ public class TBlock extends Block {
     };
     @Override
     public Color getColor() {
-        return new Color(128, 0, 100);
+        return new Color(204, 71, 149);
     }
 
     @Override

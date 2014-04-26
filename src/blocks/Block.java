@@ -21,10 +21,18 @@ public abstract class Block {
         new FlashBlock(),
     };
 
-    public static Block getRandomBlock() {
+    public static Block getBlockForType(int blockType) {
+        return Block.BLOCK_TYPES[blockType];
+    }
+
+    public static int getRandomBlockType() {
         Random rand = new Random();
         // -2 to exclude the FlashBlock, which is used just for drawing an animation.
-        Block block = BLOCK_TYPES[rand.nextInt(BLOCK_TYPES.length - 2) + 1];
+        return rand.nextInt(BLOCK_TYPES.length - 2) + 1;
+    }
+
+    public static Block getRandomBlock() {
+        Block block = BLOCK_TYPES[getRandomBlockType()];
         @SuppressWarnings("unchecked")
         Class<Block> BlockType = (Class<Block>) block.getClass();
         try {

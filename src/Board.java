@@ -65,9 +65,55 @@ public class Board implements GameFrame.GameKeyListener {
 
     private void start() {
         if (timer == null) {
-            int speed = 1000 - 100 * state.getLevel();
-            if (speed < 50) {
-                speed = 50;
+            int speed = 0;
+            switch (state.getLevel()) {
+                case 0:
+                    speed = 750;
+                    break;
+                case 1:
+                    speed = 600;
+                    break;
+                case 2:
+                    speed = 450;
+                    break;
+                case 3:
+                    speed = 350;
+                    break;
+                case 4:
+                    speed = 300;
+                    break;
+                case 5:
+                    speed = 250;
+                    break;
+                case 6:
+                    speed = 200;
+                    break;
+                case 7:
+                    speed = 175;
+                    break;
+                case 8:
+                    speed = 150;
+                    break;
+                case 9:
+                    speed = 125;
+                    break;
+                case 10:
+                    speed = 100;
+                    break;
+                case 11:
+                case 12:
+                case 13:
+                case 14:
+                case 15:
+                case 16:
+                case 17:
+                case 18:
+                case 19:
+                    speed = 90;
+                    break;
+                default:
+                    speed = 80;
+                    break;
             }
             timer = new Timer(speed, e -> {
                 GLog.info("Timer.");

@@ -23,7 +23,7 @@ public class IBlock extends Block {
     };
     @Override
     public Color getColor() {
-        return new Color(0, 103, 128);
+        return new Color(69, 165, 197);
     }
 
     @Override

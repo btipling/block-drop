@@ -18,7 +18,7 @@ public class ZBlock extends Block {
         {1, 1, 0,},
         {1, 0, 0,}
     };
-    protected static Color color = new Color(128, 0, 21);
+    protected static Color color = new Color(226, 79, 79);
 
     public void drawBox() {
 
