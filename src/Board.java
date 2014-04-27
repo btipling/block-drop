@@ -1,16 +1,114 @@
 import dropblock.utils.GLog;
 
 import javax.swing.*;
-import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.text.NumberFormat;
 import java.util.prefs.Preferences;
 
-public class Board implements GameFrame.GameKeyListener {
+public class Board {
+
+    private class GameKeyHandler implements GameFrame.GameKeyListener {
+        @Override
+        public void gameKeyTriggered(KeyEvent e) {
+            GLog.info("Key pressed!");
+            int pressedChar = e.getKeyCode();
+            switch (pressedChar) {
+                case 82: //r
+                    state.rotate();
+                    break;
+                case 68: //d
+                    state.drop();
+                    break;
+                case 80: //p
+                    togglePause();
+                    break;
+                case 83: //s
+                    toggleGame();
+                    break;
+            }
+            updateGame();
+        }
+    }
+
+    private class GameKeyDownHandler implements GameFrame.GameKeyListener {
+
+        @Override
+        public void gameKeyTriggered(KeyEvent e) {
+            int pressedChar = e.getKeyCode();
+            switch (pressedChar) {
+                case 37: //left arrow
+                    if (movingLeft) {
+                        return;
+                    }
+                    movingDown = false;
+                    movingRight = false;
+                    state.moveLeft();
+                    movingLeft = true;
+                    updateGame();
+                    startMoving();
+                    break;
+                case 39: //right arrow
+                    if (movingRight) {
+                        return;
+                    }
+                    movingLeft = false;
+                    movingDown = false;
+                    state.moveRight();
+                    movingRight = true;
+                    updateGame();
+                    startMoving();
+                    break;
+                case 40: //down arrow
+                    if (movingDown) {
+                        return;
+                    }
+                    movingLeft = false;
+                    movingRight = false;
+                    GLog.info("Moving down");
+                    state.moveDown();
+                    movingDown = true;
+                    updateGame();
+                    startMoving();
+                    break;
+            }
+        }
+    }
+
+
+
+    private class GameKeyUpHandler implements GameFrame.GameKeyListener {
+
+        @Override
+        public void gameKeyTriggered(KeyEvent e) {
+            int pressedChar = e.getKeyCode();
+            switch (pressedChar) {
+                case 37: //left arrow
+                    if (movingLeft) {
+                        movingLeft = false;
+                        stopMoving();
+                    }
+                    break;
+                case 39: //right arrow
+                    if (movingRight) {
+                        movingRight = false;
+                        stopMoving();
+                    }
+                    break;
+                case 40: //down arrow
+                    if (movingDown) {
+                        movingDown = false;
+                        stopMoving();
+                    }
+                    break;
+            }
+        }
+    }
+
     final static String TOP_SCORE_PREF = "topscorepref";
-    private JButton stopButton;
     private JButton startButton;
     private JButton pauseButton;
     private JPanel gamePanel;
@@ -27,19 +125,26 @@ public class Board implements GameFrame.GameKeyListener {
     private JLabel linesTitleLabel;
     private JTextArea instructionsLabel;
     private JLabel nextLabel;
+    private JButton resetTopScoreButton;
     private Timer timer;
     private State state;
     private Preferences prefs;
+    private boolean movingDown = false;
+    private boolean movingLeft = false;
+    private boolean movingRight = false;
+    private Timer moveTimer;
 
     public Board(Preferences prefs, Font customFont) {
         this.prefs = prefs;
-        startButton.addActionListener(e -> start());
-        stopButton.addActionListener(e -> stop());
-        pauseButton.addActionListener(e -> pause());
-        GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+        startButton.addActionListener((e) -> this.toggleGame());
+        pauseButton.addActionListener(e -> this.togglePause());
+        resetTopScoreButton.addActionListener(e -> {
+            prefs.putInt(TOP_SCORE_PREF, 0);
+            topScore.setText("0");
+        });
         customFont = customFont.deriveFont(15.0f);
         Object[] labels = new Object[]{topScore, scoreLabel, currentScore, linesLabel, linesTitleLabel, levelLabel,
-            levelTitleLabel, instructionsLabel, topScoreLabel, nextLabel, startButton, stopButton, pauseButton};
+            levelTitleLabel, instructionsLabel, topScoreLabel, nextLabel, startButton, pauseButton, resetTopScoreButton};
         for (Object label : labels) {
             JComponent component = (JComponent) label;
             component.setFont(customFont);
@@ -49,11 +154,62 @@ public class Board implements GameFrame.GameKeyListener {
         }
         int score = prefs.getInt(TOP_SCORE_PREF, 0);
         topScore.setText(NumberFormat.getNumberInstance().format(score));
+        ((GamePanel) gamePanel).setGameOverFont(customFont);
+    }
+
+    private void startMoving() {
+        if (moveTimer != null) {
+            stopMoving();
+        }
+        moveTimer = new Timer(175, null);
+        moveTimer.addActionListener((e) -> {
+            moveTimer.setDelay(25);
+            GLog.info("Num listeners %d", moveTimer.getActionListeners().length);
+            if (movingLeft) {
+               state.moveLeft();
+            }
+            if (movingDown) {
+               state.moveDown();
+            }
+            if (movingRight) {
+               state.moveRight();
+            }
+            updateGame();
+        });
+        moveTimer.start();
+    }
+
+    private void stopMoving() {
+        if (moveTimer == null) {
+            return;
+        }
+        moveTimer.stop();
+        moveTimer = null;
+    }
+
+    private void togglePause() {
+        if (state.isPaused()) {
+            pauseButton.setText("Pause");
+            unPause();
+        } else {
+            pauseButton.setText("Unpause");
+            pause();
+        }
+    }
+
+    private void toggleGame() {
+        if (state.isGameOver()) {
+            start();
+        } else {
+            stop();
+        }
     }
 
     public void showBoard() {
         GameFrame frame = new GameFrame();
-        frame.addGameKeyListener(this);
+        frame.addGameKeyListener(new GameKeyHandler());
+        frame.addGameKeyUpListener(new GameKeyUpHandler());
+        frame.addGameKeyDownListener(new GameKeyDownHandler());
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         frame.getContentPane().add(contentPanel);
         frame.setMinimumSize(new Dimension(520, 645));
@@ -72,7 +228,11 @@ public class Board implements GameFrame.GameKeyListener {
         nextPiecePanel = new PreviewPanel();
         state.addAnimationStateListener(this::updateGame);
         state.addScoreStateListener(this::updateScore);
-        state.addGameOverListener(this::pause);
+        state.addGameOverListener(() -> {
+            stop();
+            ((GamePanel) gamePanel).setGameOver(true);
+            updateGame();
+        });
     }
 
     private void updateScore() {
@@ -87,9 +247,8 @@ public class Board implements GameFrame.GameKeyListener {
         currentScore.setText(formattedScore);
         levelLabel.setText(String.valueOf(numberFormatter.format(state.getLevel())));
         linesLabel.setText(String.valueOf(numberFormatter.format(state.getLines())));
-        timer.stop();
-        timer = null;
-        start();
+        updateTimer();
+        timer.start();
     }
 
     private void updateGame() {
@@ -97,77 +256,99 @@ public class Board implements GameFrame.GameKeyListener {
         gamePanel.repaint();
     }
 
+    private void updateTimer() {
+        if (timer != null) {
+            timer.stop();
+            timer = null;
+        }
+        int speed = 0;
+        switch (state.getLevel()) {
+            case 0:
+                speed = 750;
+                break;
+            case 1:
+                speed = 600;
+                break;
+            case 2:
+                speed = 450;
+                break;
+            case 3:
+                speed = 350;
+                break;
+            case 4:
+                speed = 300;
+                break;
+            case 5:
+                speed = 250;
+                break;
+            case 6:
+                speed = 200;
+                break;
+            case 7:
+                speed = 175;
+                break;
+            case 8:
+                speed = 150;
+                break;
+            case 9:
+                speed = 125;
+                break;
+            case 10:
+                speed = 100;
+                break;
+            case 11:
+            case 12:
+            case 13:
+            case 14:
+            case 15:
+            case 16:
+            case 17:
+            case 18:
+            case 19:
+                speed = 90;
+                break;
+            default:
+                speed = 80;
+                break;
+        }
+        timer = new Timer(speed, e -> {
+            GLog.info("Timer.");
+            state.tick();
+            updateGame();
+        });
+    }
+
     private void start() {
+        if (!state.isGameOver()) {
+            return;
+        }
         if (timer == null) {
-            int speed = 0;
-            switch (state.getLevel()) {
-                case 0:
-                    speed = 750;
-                    break;
-                case 1:
-                    speed = 600;
-                    break;
-                case 2:
-                    speed = 450;
-                    break;
-                case 3:
-                    speed = 350;
-                    break;
-                case 4:
-                    speed = 300;
-                    break;
-                case 5:
-                    speed = 250;
-                    break;
-                case 6:
-                    speed = 200;
-                    break;
-                case 7:
-                    speed = 175;
-                    break;
-                case 8:
-                    speed = 150;
-                    break;
-                case 9:
-                    speed = 125;
-                    break;
-                case 10:
-                    speed = 100;
-                    break;
-                case 11:
-                case 12:
-                case 13:
-                case 14:
-                case 15:
-                case 16:
-                case 17:
-                case 18:
-                case 19:
-                    speed = 90;
-                    break;
-                default:
-                    speed = 80;
-                    break;
-            }
-            timer = new Timer(speed, e -> {
-                GLog.info("Timer.");
-                state.tick();
-                updateGame();
-            });
+            updateTimer();
         }
         if (timer.isRunning()) {
             return;
         }
-        timer.start();
+        state.setPaused(false);
+        pauseButton.setText("Pause");
+        state.startGame();
         GLog.info("Started.");
+        timer.start();
+        startButton.setText("Stop");
+        ((GamePanel) gamePanel).setGameOver(false);
+        pauseButton.setEnabled(true);
+        updateGame();
     }
 
     private void stop() {
-        if (timer == null) {
+        startButton.setText("Start");
+        pauseButton.setEnabled(false);
+        if (timer != null) {
+            timer.stop();
+            timer = null;
+        }
+        if (state.isGameOver()) {
             return;
         }
-        pause();
-        timer = null;
         state.endCurrentGame();
         updateGame();
         GLog.info("Stopped.");
@@ -177,40 +358,21 @@ public class Board implements GameFrame.GameKeyListener {
         if (timer == null) {
             return;
         }
+        state.setPaused(true);
         timer.stop();
         GLog.info("Paused.");
     }
 
-    @Override
-    public void gameKeyTriggered(KeyEvent e) {
-        GLog.info("Key pressed!");
-        int pressedChar = e.getKeyCode();
-        switch(pressedChar) {
-            case 37: //left arrow
-                state.moveLeft();
-                break;
-            case 39: //right arrow
-                state.moveRight();
-                break;
-            case 40: //down arrow
-                state.moveDown();
-                break;
-            case 82: //4
-                state.rotate();
-                break;
-            case 68: //d
-                state.drop();
-                break;
-            case 80: //p
-                pause();
-                break;
-            case 83: //s
-                start();
-                break;
-            case 84: //t
-                stop();
-                break;
+    private void unPause() {
+        if (timer == null) {
+            return;
         }
-        updateGame();
+        if (timer.isRunning()) {
+            return;
+        }
+        state.setPaused(false);
+        timer.start();
+        GLog.info("unpaused");
     }
+
 }

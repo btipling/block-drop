@@ -1,10 +1,13 @@
 import blocks.Block;
 
 import java.awt.*;
+import java.awt.font.GlyphVector;
 
 public class GamePanel extends DrawPanel {
 
     private State state;
+    private boolean gameOver;
+    private Font gameOverFont;
 
     public GamePanel(State state) {
         this.state = state;
@@ -47,5 +50,26 @@ public class GamePanel extends DrawPanel {
               }
           }
         }
+        if (gameOver) {
+            String text = "Game Over";
+            g2d.setFont(gameOverFont);
+            FontMetrics fontMetrics = g2d.getFontMetrics(gameOverFont);
+            g2d.setColor(Color.BLACK);
+            GlyphVector glyphVector = gameOverFont.createGlyphVector(g2d.getFontRenderContext(), text);
+            Shape shape = glyphVector.getOutline();
+            g2d.setStroke(new BasicStroke(6.0f));
+            g2d.translate(width/2 - fontMetrics.stringWidth(text)/2, height/2);
+            g2d.draw(shape);
+            g2d.setColor(Color.WHITE);
+            g2d.drawString(text, 0, 0);
+        }
+    }
+
+    public void setGameOver(boolean gameOver) {
+        this.gameOver = gameOver;
+    }
+
+    public void setGameOverFont(Font gameOverFont) {
+        this.gameOverFont = gameOverFont.deriveFont(50.0f);
     }
 }

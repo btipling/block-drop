@@ -1,5 +1,4 @@
 import blocks.Block;
-import com.sun.jdi.connect.Connector;
 import dropblock.utils.GLog;
 
 import javax.swing.*;
@@ -21,6 +20,7 @@ public class State {
 
 
     public static final int DISPLAY_ROW_START = 2;
+    private boolean paused;
     private boolean gameOver = true;
     private int score = 0;
     private int level = 0;
@@ -44,6 +44,14 @@ public class State {
         return nextBlock;
     }
 
+    public boolean isPaused() {
+        return paused;
+    }
+
+    public void setPaused(boolean paused) {
+        this.paused  = paused;
+    }
+
     private Block getNewRandomBlock() {
         currentBlockPos = new int[]{3, 0};
         if (nextBlock == null) {
@@ -60,6 +68,20 @@ public class State {
         for (StateChangeListener listener : listeners) {
             listener.stateChanged();
         }
+    }
+
+    public boolean isGameOver() {
+        return gameOver;
+    }
+
+    public void startGame() {
+        level = 0;
+        score = 0;
+        lines = 0;
+        gameOver = false;
+        fireStateChangeListners(scoreListeners);
+        zeroBoardState();
+        fireStateChangeListners(animationListeners);
     }
 
     public void addBlockDroppedListener(StateChangeListener listener) {
@@ -82,17 +104,9 @@ public class State {
         if (animationState > 0) {
             return;
         }
-        if (gameOver) {
-            gameOver = false;
-            level = 0;
-            score = 0;
-            lines = 0;
-            fireStateChangeListners(scoreListeners);
-            zeroBoardState();
-        }
         GLog.info("ticking");
         if (linesToIncreaseLevel == 0) {
-           linesToIncreaseLevel = level * 10 + 10;
+            linesToIncreaseLevel = level * 10 + 10;
         }
         if (currentDroppingBlock == null) {
             currentDroppingBlock = getNewRandomBlock();
@@ -168,7 +182,6 @@ public class State {
         });
         timer.start();
         GLog.info("Started.");
-
     }
 
     private void removeRows(List<Integer> rowsToKill) {
@@ -241,6 +254,7 @@ public class State {
     }
 
     public void endCurrentGame() {
+        gameOver = true;
         currentDroppingBlock = null;
         score = 0;
         lines = 0;
@@ -264,7 +278,7 @@ public class State {
             if (coords[1] >= boardState.length) {
                 timer.stop();
                 animationState--;
-                zeroBoardState();
+                fireStateChangeListners(gameOverListeners);
             }
         });
         timer.start();
@@ -401,8 +415,13 @@ public class State {
         GLog.info("Started.");
     }
 
+
+    private boolean canMove() {
+        return !gameOver && currentBlockPos != null && currentDroppingBlock != null && !paused;
+    }
+
     public void moveLeft() {
-        if (currentBlockPos == null || currentDroppingBlock == null) {
+        if (!canMove()) {
             return;
         }
         forceLeft();
@@ -416,8 +435,7 @@ public class State {
     }
 
     public void moveRight() {
-        if (currentBlockPos == null || currentDroppingBlock == null) {
-            // No current block;
+        if (!canMove()) {
             return;
         }
         forceRight();
@@ -431,7 +449,7 @@ public class State {
     }
 
     public void moveDown() {
-        if (currentBlockPos == null || currentDroppingBlock == null) {
+        if (!canMove()) {
             return;
         }
         int offset = currentDroppingBlock.getBottomBorderRow();
@@ -474,8 +492,6 @@ public class State {
         scoreGame();
         if (currentBlockPos[1] < 1) {
             endCurrentGame();
-            gameOver = true;
-            fireStateChangeListners(gameOverListeners);
         }
     }
 
