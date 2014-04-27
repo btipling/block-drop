@@ -307,7 +307,7 @@ public class State {
 
     public void rotate() {
         GLog.info("rotate");
-        if (currentBlockPos == null || currentDroppingBlock == null) {
+        if (!canMove()) {
             return;
         }
         currentDroppingBlock.rotate();
