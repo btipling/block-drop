@@ -21,6 +21,16 @@ public class MP3Sound extends Sound {
         if (mediaPlayer == null) {
             return;
         }
+        mediaPlayer.setVolume(0.2);
+        mediaPlayer.setCycleCount(MediaPlayer.INDEFINITE);
         mediaPlayer.play();
+
+    }
+
+    public void stop() {
+        if (mediaPlayer == null) {
+            return;
+        }
+        mediaPlayer.stop();
     }
 }

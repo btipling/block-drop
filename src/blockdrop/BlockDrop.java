@@ -1,6 +1,7 @@
 package blockdrop;
 
 import blockdrop.utils.GLog;
+import javafx.embed.swing.JFXPanel;
 
 import javax.swing.*;
 import java.awt.*;
@@ -13,6 +14,7 @@ public class BlockDrop {
     public static void main(String[] args) {
         GLog.info("Starting game");
         SwingUtilities.invokeLater(BlockDrop::run);
+        new JFXPanel(); //This does some kind of initialization needed to play mp3s.
     }
 
     private static void run() {

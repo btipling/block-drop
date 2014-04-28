@@ -1,5 +1,6 @@
 package blockdrop;
 
+import blockdrop.sound.MP3Sound;
 import blockdrop.sound.WavSound;
 import blockdrop.blocks.Block;
 import blockdrop.utils.GLog;
@@ -48,6 +49,7 @@ public class State {
     private WavSound linesSound;
     private WavSound bonusSound;
     private WavSound levelUpSound;
+    private MP3Sound music;
 
     public State() {
         zeroBoardState();
@@ -61,6 +63,9 @@ public class State {
         linesSound = new WavSound("lines.wav");
         bonusSound = new WavSound("bonus.wav");
         levelUpSound = new WavSound("levelup.wav");
+        music = new MP3Sound("music.mp3");
+        music.setUp();
+        music.play();
     }
 
     public Block getNextBlock() {
@@ -453,7 +458,6 @@ public class State {
                 animationState--;
                 timer.stop();
                 GLog.info("animating finished.");
-                dropSound.play();
                 return;
             }
             moveBlockDown();
@@ -500,6 +504,9 @@ public class State {
     }
 
     public void moveDown() {
+        if (!canMove()) {
+            return;
+        }
         moveBlockDown();
         moveDownSound.play();
     }
@@ -544,6 +551,7 @@ public class State {
     }
 
     private void hitBottom() {
+        dropSound.play();
         copyBoardState(boardState, storedBoardState);
         currentDroppingBlock = null;
         scoreGame();

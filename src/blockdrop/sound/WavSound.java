@@ -3,11 +3,8 @@ package blockdrop.sound;
 import blockdrop.utils.GLog;
 
 import javax.sound.sampled.*;
-import java.util.concurrent.locks.ReentrantLock;
 
 public class WavSound extends Sound {
-
-    private ReentrantLock mutex = new ReentrantLock();
 
     public WavSound(String path) {
         super(path);
@@ -18,48 +15,44 @@ public class WavSound extends Sound {
         //Do nothing.
     }
 
-    private Clip setUpClip() {
-        mutex.lock();
-        AudioInputStream audioIn = null;
-        try {
-            audioIn = AudioSystem.getAudioInputStream(getResource());
-        } catch (Exception e) {
-            GLog.info("Unabl to load audio wav.");
-        }
-        if (audioIn == null) {
-            mutex.unlock();
-            return null;
-        }
-        final Clip clip;
-        try {
-            clip = AudioSystem.getClip();
-        } catch (LineUnavailableException e) {
-            GLog.info("Line unavailable launching wav.");
-            mutex.unlock();
-            return null;
-        }
-        try {
-            clip.open(audioIn);
-        } catch (Exception e) {
-            GLog.info("Unable to open clip for wav.");
-            mutex.unlock();
-            return null;
-        }
-        clip.addLineListener(event -> {
-            if (event.getType() == LineEvent.Type.STOP) {
-                mutex.unlock();
-                clip.close();
-            }
-        });
-        return clip;
-    }
 
     @Override
-    public synchronized void play() {
-        Clip clip = setUpClip();
-        if (clip == null) {
-            return;
-        }
-        clip.start();
+    public  void play() {
+        Thread playThread = new Thread() {
+            @Override
+            public void run() {
+                AudioInputStream audioIn = null;
+                try {
+                    audioIn = AudioSystem.getAudioInputStream(getResource());
+                } catch (Exception e) {
+                    GLog.info("Unabl to load audio wav.");
+                }
+                if (audioIn == null) {
+                    return;
+                }
+                final Clip clip;
+                try {
+                    clip = AudioSystem.getClip();
+                } catch (LineUnavailableException e) {
+                    GLog.info("Line unavailable launching wav.");
+                    return;
+                }
+                try {
+                    clip.open(audioIn);
+                } catch (Exception e) {
+                    GLog.info("Unable to open clip for wav.");
+                    return;
+                }
+                clip.addLineListener(event -> {
+                    if (event.getType() == LineEvent.Type.STOP) {
+                        GLog.info("clip stopped");
+                        clip.close();
+                    }
+                });
+                clip.start();
+            }
+        };
+        playThread.start();
+
     }
 }
