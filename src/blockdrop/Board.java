@@ -156,7 +156,7 @@ public class Board {
             @Override
             public void actionPerformed(ActionEvent e) {
                 boolean musicEffects = musicCheckBox.isSelected();
-                prefs.putBoolean(SOUND_EFFECTS_PREF, musicEffects);
+                prefs.putBoolean(MUSIC_EFFECTS_PREF, musicEffects);
                 state.playMusic(musicEffects);
             }
         });
