@@ -5,8 +5,7 @@ import javafx.embed.swing.JFXPanel;
 
 import javax.swing.*;
 import java.awt.*;
-import java.io.File;
-import java.net.URL;
+import java.io.InputStream;
 import java.util.prefs.Preferences;
 
 public class BlockDrop {
@@ -20,8 +19,7 @@ public class BlockDrop {
     private static void run() {
         Preferences prefs = Preferences.userRoot().node("BlockDrop");
         GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
-        URL url = BlockDrop.class.getResource("../fonts/Action_Man_Bold.ttf");
-        File file = new File(url.getPath());
+        InputStream file = BlockDrop.class.getResourceAsStream("/fonts/Action_Man_Bold.ttf");
         Font customFont = null;
         try {
             customFont = Font.createFont(Font.TRUETYPE_FONT, file);

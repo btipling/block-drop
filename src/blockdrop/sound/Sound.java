@@ -10,7 +10,7 @@ public abstract class Sound {
 
     public Sound(String path) {
         this.path = path;
-        resource = BlockDrop.class.getResource(String.format("../sounds/%s", path));
+        resource = BlockDrop.class.getResource(String.format("/sounds/%s", path));
     }
 
     public URL getResource() {
