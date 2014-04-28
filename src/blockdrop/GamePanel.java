@@ -1,4 +1,6 @@
-import blocks.Block;
+package blockdrop;
+
+import blockdrop.blocks.Block;
 
 import java.awt.*;
 import java.awt.font.GlyphVector;

@@ -1,3 +1,5 @@
+package blockdrop;
+
 import javax.swing.*;
 import java.awt.*;
 

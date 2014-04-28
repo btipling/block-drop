@@ -1,31 +1,29 @@
-package blocks;
+package blockdrop.blocks;
 
 import java.awt.*;
 
-public class JBlock extends Block {
+public class IBlock extends Block {
     protected int[][] rotationA = new int[][]{
-        {0, 0, 0,},
-        {1, 1, 1,},
-        {0, 0, 1,},
+        {0, 0, 0, 0},
+        {0, 0, 0, 0},
+        {1, 1, 1, 1},
+        {0, 0, 0, 0},
     };
     protected int[][] rotationB = new int[][]{
-        {0, 1, 0,},
-        {0, 1, 0,},
-        {1, 1, 0,},
+        {0, 0, 1, 0},
+        {0, 0, 1, 0},
+        {0, 0, 1, 0},
+        {0, 0, 1, 0},
     };
     protected int[][] rotationC = new int[][]{
-        {1, 0, 0,},
-        {1, 1, 1,},
-        {0, 0, 0,},
-    };
-    protected int[][] rotationD = new int[][]{
-        {0, 1, 1,},
-        {0, 1, 0,},
-        {0, 1, 0,},
+        {0, 1, 0, 0},
+        {0, 1, 0, 0},
+        {0, 1, 0, 0},
+        {0, 1, 0, 0},
     };
     @Override
     public Color getColor() {
-        return new Color(69, 122, 197);
+        return new Color(69, 165, 197);
     }
 
     @Override
@@ -40,11 +38,11 @@ public class JBlock extends Block {
 
     @Override
     protected int[][] getRotationC() {
-        return rotationC;
+        return rotationA;
     }
 
     @Override
     protected int[][] getRotationD() {
-        return rotationD;
+        return rotationC;
     }
 }

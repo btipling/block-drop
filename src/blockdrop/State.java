@@ -1,5 +1,8 @@
-import blocks.Block;
-import dropblock.utils.GLog;
+package blockdrop;
+
+import blockdrop.sound.WavSound;
+import blockdrop.blocks.Block;
+import blockdrop.utils.GLog;
 
 import javax.swing.*;
 import java.util.ArrayList;
@@ -35,9 +38,29 @@ public class State {
     public static final int NUM_ROWS = 22;
     public static final int NUM_COLS = 10;
     private int animationState = 0;
+    private WavSound dropSound;
+    private WavSound rotateSound;
+    private WavSound moveSound;
+    private WavSound moveDownSound;
+    private WavSound endGameSound;
+    private WavSound startGameSound;
+    private WavSound pauseSound;
+    private WavSound linesSound;
+    private WavSound bonusSound;
+    private WavSound levelUpSound;
 
     public State() {
         zeroBoardState();
+        dropSound = new WavSound("drop.wav");
+        rotateSound = new WavSound("rotate.wav");
+        moveSound = new WavSound("move.wav");
+        moveDownSound = new WavSound("movedown.wav");
+        endGameSound = new WavSound("gameover.wav");
+        startGameSound = new WavSound("start.wav");
+        pauseSound = new WavSound("pause.wav");
+        linesSound = new WavSound("lines.wav");
+        bonusSound = new WavSound("bonus.wav");
+        levelUpSound = new WavSound("levelup.wav");
     }
 
     public Block getNextBlock() {
@@ -50,6 +73,7 @@ public class State {
 
     public void setPaused(boolean paused) {
         this.paused  = paused;
+        pauseSound.play();
     }
 
     private Block getNewRandomBlock() {
@@ -61,6 +85,7 @@ public class State {
         nextBlock = Block.getRandomBlock();
         block.setupBlock();
         fireStateChangeListners(newBlockListeners);
+        moveDownSound.play();
         return block;
     }
 
@@ -82,6 +107,7 @@ public class State {
         fireStateChangeListners(scoreListeners);
         zeroBoardState();
         fireStateChangeListners(animationListeners);
+        startGameSound.play();
     }
 
     public void addBlockDroppedListener(StateChangeListener listener) {
@@ -118,6 +144,8 @@ public class State {
     private void scoreGame() {
         int roundScore = 0;
         int lineMultiples = 0;
+        boolean scored = false;
+        boolean hasBonus = false;
         List<Integer> rowsToKill = new ArrayList<>();
         for (int r = 0; r < boardState.length; r++) {
             boolean isComplete = true;
@@ -131,18 +159,28 @@ public class State {
             }
             if (isComplete) {
                 rowsToKill.add(r);
+                scored = true;
                 lineMultiples++;
                 lines++;
                 linesThisLevel++;
             }
             if (lineMultiples == 4) {
                 roundScore += scoreMultiples(lineMultiples);
+                hasBonus = true;
                 lineMultiples = 0;
             }
+        }
+        if (!scored) {
+            return;
         }
         score += roundScore + scoreMultiples(lineMultiples);
         fireStateChangeListners(scoreListeners);
         killRows(rowsToKill);
+        if (hasBonus) {
+            bonusSound.play();
+        } else {
+            linesSound.play();
+        }
     }
 
     private void checkLevel() {
@@ -153,6 +191,7 @@ public class State {
         linesToIncreaseLevel = 10;
         level++;
         fireStateChangeListners(scoreListeners);
+        levelUpSound.play();
     }
 
     private void killRows(List<Integer> rowsToKill) {
@@ -260,6 +299,7 @@ public class State {
         lines = 0;
         level = 0;
         killBoard();
+        endGameSound.play();
     }
 
     private void killBoard() {
@@ -329,6 +369,7 @@ public class State {
             movements++;
         }
         if (!isObstructed()) {
+            rotateSound.play();
             return;
         }
         // Still obstructed, revert any left or right movements and try moving up a bit.
@@ -351,7 +392,9 @@ public class State {
             currentBlockPos[0] = previousXPos;
             currentBlockPos[1] = previousYPos;
             currentDroppingBlock.rotateBack();
+            return;
         }
+        rotateSound.play();
     }
 
     private boolean pastLeftEdge() {
@@ -396,6 +439,9 @@ public class State {
     }
 
     public void drop() {
+        if (!canMove()) {
+            return;
+        }
         GLog.info("dropping");
         animationState++;
         final Timer timer = new Timer(2, null);
@@ -407,9 +453,10 @@ public class State {
                 animationState--;
                 timer.stop();
                 GLog.info("animating finished.");
+                dropSound.play();
                 return;
             }
-            moveDown();
+            moveBlockDown();
         });
         timer.start();
         GLog.info("Started.");
@@ -427,7 +474,9 @@ public class State {
         forceLeft();
         if (isObstructed()) {
             forceRight();
+            return;
         }
+        moveSound.play();
     }
 
     private void forceLeft() {
@@ -441,7 +490,9 @@ public class State {
         forceRight();
         if (isObstructed()) {
             forceLeft();
+            return;
         }
+        moveSound.play();
     }
 
     private void forceRight() {
@@ -449,6 +500,12 @@ public class State {
     }
 
     public void moveDown() {
+        moveBlockDown();
+        moveDownSound.play();
+    }
+
+
+    public void moveBlockDown() {
         if (!canMove()) {
             return;
         }

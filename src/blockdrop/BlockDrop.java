@@ -1,4 +1,6 @@
-import dropblock.utils.GLog;
+package blockdrop;
+
+import blockdrop.utils.GLog;
 
 import javax.swing.*;
 import java.awt.*;
@@ -16,7 +18,7 @@ public class BlockDrop {
     private static void run() {
         Preferences prefs = Preferences.userRoot().node("BlockDrop");
         GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
-        URL url = BlockDrop.class.getResource("./fonts/Action_Man_Bold.ttf");
+        URL url = BlockDrop.class.getResource("../fonts/Action_Man_Bold.ttf");
         File file = new File(url.getPath());
         Font customFont = null;
         try {

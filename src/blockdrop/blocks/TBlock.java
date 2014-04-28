@@ -1,32 +1,31 @@
-package blocks;
+package blockdrop.blocks;
 
 import java.awt.*;
 
-public class ZBlock extends Block {
+public class TBlock extends Block {
     protected int[][] rotationA = new int[][]{
         {0, 0, 0,},
-        {1, 1, 0,},
-        {0, 1, 1,},
+        {1, 1, 1,},
+        {0, 1, 0,},
     };
     protected int[][] rotationB = new int[][]{
-        {0, 0, 1,},
-        {0, 1, 1,},
-        {0, 1, 0,}
+        {0, 1, 0,},
+        {1, 1, 0,},
+        {0, 1, 0,},
     };
     protected int[][] rotationC = new int[][]{
         {0, 1, 0,},
-        {1, 1, 0,},
-        {1, 0, 0,}
+        {1, 1, 1,},
+        {0, 0, 0,},
     };
-    protected static Color color = new Color(226, 79, 79);
-
-    public void drawBox() {
-
-    }
-
+    protected int[][] rotationD = new int[][]{
+        {0, 1, 0,},
+        {0, 1, 1,},
+        {0, 1, 0,},
+    };
     @Override
     public Color getColor() {
-        return color;
+        return new Color(204, 71, 149);
     }
 
     @Override
@@ -41,12 +40,11 @@ public class ZBlock extends Block {
 
     @Override
     protected int[][] getRotationC() {
-        return rotationA;
+        return rotationC;
     }
 
     @Override
     protected int[][] getRotationD() {
-        return rotationC;
+        return rotationD;
     }
-
 }

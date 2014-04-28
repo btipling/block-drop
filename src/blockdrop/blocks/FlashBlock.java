@@ -1,4 +1,4 @@
-package blocks;
+package blockdrop.blocks;
 
 import java.awt.*;
 

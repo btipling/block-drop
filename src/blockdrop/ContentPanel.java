@@ -1,3 +1,5 @@
+package blockdrop;
+
 import java.awt.*;
 
 public class ContentPanel extends DrawPanel {

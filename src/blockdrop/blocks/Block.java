@@ -1,6 +1,6 @@
-package blocks;
+package blockdrop.blocks;
 
-import dropblock.utils.GLog;
+import blockdrop.utils.GLog;
 
 import java.awt.*;
 import java.util.Random;

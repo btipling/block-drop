@@ -1,4 +1,4 @@
-package dropblock.utils;
+package blockdrop.utils;
 
 import java.util.logging.Logger;
 
