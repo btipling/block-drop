@@ -3,6 +3,10 @@ block-drop
 
 A tetris clone thing
 
+This is the finished game. It requires Java 8. You probably do not have Java 8. It is not the default download for Windows or mac.
+
+Download a release: https://github.com/btipling/block-drop/releases/download/1.0/block-drop.jar
+
 Features:
 
 Music
