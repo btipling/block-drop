@@ -50,8 +50,10 @@ public class State {
     private WavSound bonusSound;
     private WavSound levelUpSound;
     private MP3Sound music;
+    private boolean playSound = true;
+    private boolean playMusic = true;
 
-    public State() {
+    public State(boolean playMusic) {
         zeroBoardState();
         dropSound = new WavSound("drop.wav");
         rotateSound = new WavSound("rotate.wav");
@@ -65,7 +67,23 @@ public class State {
         levelUpSound = new WavSound("levelup.wav");
         music = new MP3Sound("music.mp3");
         music.setUp();
-        music.play();
+        this.playMusic = playMusic;
+        if (playMusic) {
+            music.play();
+        }
+    }
+
+    public void playSoundEffects(boolean soundEffects) {
+        playSound = soundEffects;
+    }
+
+    public void playMusic(boolean musicEffects) {
+        playMusic = musicEffects;
+        if (playMusic) {
+            music.play();
+        } else {
+            music.stop();
+        }
     }
 
     public Block getNextBlock() {
@@ -78,7 +96,9 @@ public class State {
 
     public void setPaused(boolean paused) {
         this.paused  = paused;
-        pauseSound.play();
+        if (playSound) {
+            pauseSound.play();
+        }
     }
 
     private Block getNewRandomBlock() {
@@ -90,7 +110,9 @@ public class State {
         nextBlock = Block.getRandomBlock();
         block.setupBlock();
         fireStateChangeListners(newBlockListeners);
-        moveDownSound.play();
+        if (playSound) {
+            moveDownSound.play();
+        }
         return block;
     }
 
@@ -112,7 +134,9 @@ public class State {
         fireStateChangeListners(scoreListeners);
         zeroBoardState();
         fireStateChangeListners(animationListeners);
-        startGameSound.play();
+        if (playSound) {
+            startGameSound.play();
+        }
     }
 
     public void addBlockDroppedListener(StateChangeListener listener) {
@@ -181,10 +205,12 @@ public class State {
         score += roundScore + scoreMultiples(lineMultiples);
         fireStateChangeListners(scoreListeners);
         killRows(rowsToKill);
-        if (hasBonus) {
-            bonusSound.play();
-        } else {
-            linesSound.play();
+        if (playSound) {
+            if (hasBonus) {
+                bonusSound.play();
+            } else {
+                linesSound.play();
+            }
         }
     }
 
@@ -196,7 +222,9 @@ public class State {
         linesToIncreaseLevel = 10;
         level++;
         fireStateChangeListners(scoreListeners);
-        levelUpSound.play();
+        if (playSound) {
+            levelUpSound.play();
+        }
     }
 
     private void killRows(List<Integer> rowsToKill) {
@@ -304,7 +332,9 @@ public class State {
         lines = 0;
         level = 0;
         killBoard();
-        endGameSound.play();
+        if (playSound) {
+            endGameSound.play();
+        }
     }
 
     private void killBoard() {
@@ -374,7 +404,9 @@ public class State {
             movements++;
         }
         if (!isObstructed()) {
-            rotateSound.play();
+            if (playSound) {
+                rotateSound.play();
+            }
             return;
         }
         // Still obstructed, revert any left or right movements and try moving up a bit.
@@ -399,7 +431,9 @@ public class State {
             currentDroppingBlock.rotateBack();
             return;
         }
-        rotateSound.play();
+        if (playSound) {
+            rotateSound.play();
+        }
     }
 
     private boolean pastLeftEdge() {
@@ -480,7 +514,9 @@ public class State {
             forceRight();
             return;
         }
-        moveSound.play();
+        if (playSound) {
+            moveSound.play();
+        }
     }
 
     private void forceLeft() {
@@ -496,7 +532,9 @@ public class State {
             forceLeft();
             return;
         }
-        moveSound.play();
+        if (playSound) {
+            moveSound.play();
+        }
     }
 
     private void forceRight() {
@@ -508,7 +546,9 @@ public class State {
             return;
         }
         moveBlockDown();
-        moveDownSound.play();
+        if (playSound) {
+            moveDownSound.play();
+        }
     }
 
 
@@ -551,7 +591,9 @@ public class State {
     }
 
     private void hitBottom() {
-        dropSound.play();
+        if (playSound) {
+            dropSound.play();
+        }
         copyBoardState(boardState, storedBoardState);
         currentDroppingBlock = null;
         scoreGame();

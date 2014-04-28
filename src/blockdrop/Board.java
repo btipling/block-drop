@@ -5,6 +5,8 @@ import blockdrop.utils.GLog;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.text.NumberFormat;
 import java.util.prefs.Preferences;
@@ -109,6 +111,8 @@ public class Board {
     }
 
     final static String TOP_SCORE_PREF = "topscorepref";
+    final static String SOUND_EFFECTS_PREF = "soundeffectspref";
+    final static String MUSIC_EFFECTS_PREF = "musicpref";
     private JButton startButton;
     private JButton pauseButton;
     private JPanel gamePanel;
@@ -126,6 +130,8 @@ public class Board {
     private JTextArea instructionsLabel;
     private JLabel nextLabel;
     private JButton resetTopScoreButton;
+    private JCheckBox musicCheckBox;
+    private JCheckBox soundEffectsCheckBox;
     private Timer timer;
     private State state;
     private Preferences prefs;
@@ -138,6 +144,22 @@ public class Board {
         this.prefs = prefs;
         startButton.addActionListener((e) -> this.toggleGame());
         pauseButton.addActionListener(e -> this.togglePause());
+        soundEffectsCheckBox.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                boolean soundEffects = soundEffectsCheckBox.isSelected();
+                prefs.putBoolean(SOUND_EFFECTS_PREF, soundEffects);
+                state.playSoundEffects(soundEffects);
+            }
+        });
+        musicCheckBox.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                boolean musicEffects = musicCheckBox.isSelected();
+                prefs.putBoolean(SOUND_EFFECTS_PREF, musicEffects);
+                state.playMusic(musicEffects);
+            }
+        });
         resetTopScoreButton.addActionListener(e -> {
             prefs.putInt(TOP_SCORE_PREF, 0);
             topScore.setText("0");
@@ -156,6 +178,7 @@ public class Board {
         topScore.setText(NumberFormat.getNumberInstance().format(score));
         ((GamePanel) gamePanel).setGameOverFont(customFont);
     }
+
 
     private void startMoving() {
         if (moveTimer != null) {
@@ -218,11 +241,13 @@ public class Board {
         frame.pack();
         controlPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
         frame.setVisible(true);
+        musicCheckBox.setSelected(prefs.getBoolean(MUSIC_EFFECTS_PREF, true));
+        soundEffectsCheckBox.setSelected(prefs.getBoolean(SOUND_EFFECTS_PREF, true));
     }
 
     private void createUIComponents() {
         contentPanel = new ContentPanel();
-        state = new State();
+        state = new State(prefs.getBoolean(MUSIC_EFFECTS_PREF, true));
         state.addBlockDroppedListener(() -> ((PreviewPanel) nextPiecePanel).drawNextBlock(state.getNextBlock()));
         gamePanel = new GamePanel(state);
         nextPiecePanel = new PreviewPanel();
